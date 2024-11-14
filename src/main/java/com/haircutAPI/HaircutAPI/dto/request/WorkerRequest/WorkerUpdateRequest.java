@@ -1,4 +1,4 @@
-package com.haircutAPI.HaircutAPI.dto.request;
+package com.haircutAPI.HaircutAPI.dto.request.WorkerRequest;
 
 public class WorkerUpdateRequest {
 
