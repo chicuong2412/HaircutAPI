@@ -5,8 +5,8 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.haircutAPI.HaircutAPI.dto.request.WorkerCreationRequest;
-import com.haircutAPI.HaircutAPI.dto.request.WorkerUpdateRequest;
+import com.haircutAPI.HaircutAPI.dto.request.WorkerRequest.WorkerCreationRequest;
+import com.haircutAPI.HaircutAPI.dto.request.WorkerRequest.WorkerUpdateRequest;
 import com.haircutAPI.HaircutAPI.enity.Worker;
 import com.haircutAPI.HaircutAPI.services.WorkerService;
 
@@ -32,6 +32,11 @@ public class WorkerController {
     @GetMapping
     List<Worker> getWorkers() {
         return workerService.getAllWorkers();
+    }
+
+    @GetMapping("/searchName/{name}")
+    public List<Worker> getListSearchByName(@PathVariable String name) {
+        return workerService.searchByName(name);
     }
 
     @GetMapping("/{WorkerID}")

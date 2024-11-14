@@ -1,14 +1,14 @@
 package com.haircutAPI.HaircutAPI.services;
 
+import java.util.ArrayList;
 import java.util.List;
 
-import javax.management.RuntimeErrorException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.haircutAPI.HaircutAPI.dto.request.WorkerCreationRequest;
-import com.haircutAPI.HaircutAPI.dto.request.WorkerUpdateRequest;
+import com.haircutAPI.HaircutAPI.dto.request.WorkerRequest.WorkerCreationRequest;
+import com.haircutAPI.HaircutAPI.dto.request.WorkerRequest.WorkerUpdateRequest;
 import com.haircutAPI.HaircutAPI.enity.Worker;
 import com.haircutAPI.HaircutAPI.repositories.WorkerRepository;
 
@@ -74,5 +74,14 @@ public class WorkerService {
         if (!workerRepository.existsById(id))
             throw new RuntimeException("Worker ID is not found");
         workerRepository.deleteById(id);
+    }
+
+    public List<Worker> searchByName(String name) {
+        List<Worker> list = getAllWorkers();
+        List<Worker> listResult = new ArrayList<>();
+        list.forEach(t -> {
+            if (t.getNameWorker().contains(name)) listResult.add(t);
+        });
+        return listResult;
     }
 }

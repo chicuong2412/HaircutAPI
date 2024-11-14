@@ -1,20 +1,28 @@
-package com.haircutAPI.HaircutAPI.dto.request;
+package com.haircutAPI.HaircutAPI.dto.request.CustomerRequest;
 
-public class WorkerCreationRequest {
+import com.haircutAPI.HaircutAPI.ENUM.CustomerTypes;
+
+public class CustomerCreationRequest {
 
     private String username;
     private String password;
-    private String nameWorker;
-    private String specialities;
-    private double salary;
-    private double Rate;
+    private String nameCustomer;
+    private double loyaltyPoint;
     private String DoB;
     private String email;
     private String address;
     private String phoneNumber;
-    private int idLocation;
-    private int idRole;
     private String startDate;
+    private String lastDayUsing;
+    private CustomerTypes typeCustomer;
+
+    public CustomerTypes getTypeCustomer() {
+        return typeCustomer;
+    }
+
+    public void setTypeCustomer(CustomerTypes typeCustomer) {
+        this.typeCustomer = typeCustomer;
+    }
 
     public String getUsername() {
         return username;
@@ -32,36 +40,20 @@ public class WorkerCreationRequest {
         this.password = password;
     }
 
-    public String getNameWorker() {
-        return nameWorker;
+    public String getNameCustomer() {
+        return nameCustomer;
     }
 
-    public void setNameWorker(String nameWorker) {
-        this.nameWorker = nameWorker;
+    public void setNameCustomer(String nameCustomer) {
+        this.nameCustomer = nameCustomer;
     }
 
-    public String getSpecialities() {
-        return specialities;
+    public double getLoyaltyPoint() {
+        return loyaltyPoint;
     }
 
-    public void setSpecialities(String specialities) {
-        this.specialities = specialities;
-    }
-
-    public double getSalary() {
-        return salary;
-    }
-
-    public void setSalary(double salary) {
-        this.salary = salary;
-    }
-
-    public double getRate() {
-        return Rate;
-    }
-
-    public void setRate(double rate) {
-        Rate = rate;
+    public void setLoyaltyPoint(double loyaltyPoint) {
+        this.loyaltyPoint = loyaltyPoint;
     }
 
     public String getDoB() {
@@ -96,28 +88,20 @@ public class WorkerCreationRequest {
         this.phoneNumber = phoneNumber;
     }
 
-    public int getIdLocation() {
-        return idLocation;
-    }
-
-    public void setIdLocation(int idLocation) {
-        this.idLocation = idLocation;
-    }
-
-    public int getIdRole() {
-        return idRole;
-    }
-
-    public void setIdRole(int idRole) {
-        this.idRole = idRole;
-    }
-
     public String getStartDate() {
         return startDate;
     }
 
     public void setStartDate(String startDate) {
         this.startDate = startDate;
+    }
+
+    public String getLastDayUsing() {
+        return lastDayUsing;
+    }
+
+    public void setLastDayUsing(String lastDayUsing) {
+        this.lastDayUsing = lastDayUsing;
     }
 
 }
