@@ -6,6 +6,8 @@ import org.springframework.stereotype.Repository;
 import com.haircutAPI.HaircutAPI.enity.Worker;
 
 @Repository
-public interface WorkerRepository extends JpaRepository<Worker, Long> {
+public interface WorkerRepository extends JpaRepository<Worker, String> {
 
+
+    boolean existsByUsername(String username);
 }
