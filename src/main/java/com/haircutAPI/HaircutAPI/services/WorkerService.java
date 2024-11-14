@@ -1,9 +1,14 @@
 package com.haircutAPI.HaircutAPI.services;
 
+import java.util.List;
+
+import javax.management.RuntimeErrorException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.haircutAPI.HaircutAPI.dto.request.WorkerCreationRequest;
+import com.haircutAPI.HaircutAPI.dto.request.WorkerUpdateRequest;
 import com.haircutAPI.HaircutAPI.enity.Worker;
 import com.haircutAPI.HaircutAPI.repositories.WorkerRepository;
 
@@ -14,6 +19,9 @@ public class WorkerService {
 
     public Worker createWorker(WorkerCreationRequest request) {
         Worker worker = new Worker();
+
+        if (workerRepository.existsByUsername(request.getUsername()))
+            throw new RuntimeException("This username has already been used");
 
         worker.setNameWorker(request.getNameWorker());
         worker.setEmail(request.getEmail());
@@ -26,8 +34,45 @@ public class WorkerService {
         worker.setSpecialities(request.getSpecialities());
         worker.setDoB(request.getDoB());
         worker.setStartDate(request.getStartDate());
-
+        worker.setUsername(request.getUsername());
+        worker.setPassword(request.getPassword());
 
         return workerRepository.save(worker);
+    }
+
+    public List<Worker> getAllWorkers() {
+        return workerRepository.findAll();
+    }
+
+    public Worker getWorkerbyID(String idWorker) {
+        return workerRepository.findById(idWorker).orElseThrow(() -> new RuntimeException("Worker not found"));
+    }
+
+    public Worker updateWorker(String id, WorkerUpdateRequest rq) {
+
+        if (!workerRepository.existsById(id))
+            throw new RuntimeException("Worker ID is not found");
+
+        Worker worker = getWorkerbyID(id);
+        worker.setNameWorker(rq.getNameWorker());
+        worker.setEmail(rq.getEmail());
+        worker.setAddress(rq.getAddress());
+        worker.setIdLocation(rq.getIdLocation());
+        worker.setIdRole(rq.getIdRole());
+        worker.setPhoneNumber(rq.getPhoneNumber());
+        worker.setSalary(rq.getSalary());
+        worker.setRate(rq.getRate());
+        worker.setSpecialities(rq.getSpecialities());
+        worker.setDoB(rq.getDoB());
+        worker.setStartDate(rq.getStartDate());
+        worker.setPassword(rq.getPassword());
+
+        return workerRepository.save(worker);
+    }
+
+    public void deleteWorker(String id) {
+        if (!workerRepository.existsById(id))
+            throw new RuntimeException("Worker ID is not found");
+        workerRepository.deleteById(id);
     }
 }
