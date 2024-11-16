@@ -4,81 +4,74 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.haircutAPI.HaircutAPI.ENUM.ErrorCode;
 import com.haircutAPI.HaircutAPI.dto.request.CustomerRequest.CustomerCreationRequest;
 import com.haircutAPI.HaircutAPI.dto.request.CustomerRequest.CustomerUpdateRequest;
+import com.haircutAPI.HaircutAPI.dto.response.CustomerResponse;
 import com.haircutAPI.HaircutAPI.enity.Customer;
+import com.haircutAPI.HaircutAPI.exception.DefinedException.AppException;
+import com.haircutAPI.HaircutAPI.mapper.CustomerMapper;
 import com.haircutAPI.HaircutAPI.repositories.CustomerRepository;
 
 @Service
 public class CustomerService {
     @Autowired
     CustomerRepository customerRepository;
+    @Autowired
+    CustomerMapper customerMapper;
 
-    public Customer createCustomer(CustomerCreationRequest rq) {
-        Customer customer = new Customer();
+    public CustomerResponse createCustomer(CustomerCreationRequest rq) {
 
         if (customerRepository.existsByUsername(rq.getUsername()))
-            throw new RuntimeException("This username has already been used");
+            throw new AppException(ErrorCode.USERNAME_EXISTED);
 
-        customer.setUsername(rq.getUsername());
-        customer.setPassword(rq.getPassword());
-        customer.setNameCustomer(rq.getNameCustomer());
-        customer.setEmail(rq.getEmail());
-        customer.setAddress(rq.getAddress());
-        customer.setPhoneNumber(rq.getPhoneNumber());
-        customer.setLoyaltyPoint(rq.getLoyaltyPoint());
-        customer.setDoB(rq.getDoB());
-        customer.setStartDate(rq.getStartDate());
-        customer.setLastDayUsing(rq.getLastDayUsing());
-        customer.setTypeCustomer(rq.getTypeCustomer());
+        Customer customer = customerMapper.toCustomer(rq);
 
-        return customerRepository.save(customer);
+        PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
+        customer.setPassword(passwordEncoder.encode(rq.getPassword()));
+
+        
+
+        return customerMapper.toCustomerResponse(customerRepository.save(customer));
     }
 
-    public List<Customer> getAllCustomers() {
-        return customerRepository.findAll();
+    public List<CustomerResponse> getAllCustomers() {
+        return customerMapper.toCustomerResponses(customerRepository.findAll());
     }
 
-    public Customer getCustomerbyID(String idCustomer) {
-        return customerRepository.findById(idCustomer).orElseThrow(() -> new RuntimeException("Worker not found"));
+    public CustomerResponse getCustomerbyID(String idCustomer) {
+        return customerMapper.toCustomerResponse(
+                customerRepository.findById(idCustomer).orElseThrow(() -> new AppException(ErrorCode.ID_NOT_FOUND)));
     }
 
-    public Customer updateCustomer(String id, CustomerUpdateRequest rq) {
+    public CustomerResponse updateCustomer(String id, CustomerUpdateRequest rq) {
 
         if (!customerRepository.existsById(id))
-            throw new RuntimeException("Worker ID is not found");
+            throw new AppException(ErrorCode.ID_NOT_FOUND);
 
-        Customer customer = getCustomerbyID(id);
+        Customer customer = customerRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.ID_NOT_FOUND));
+        customerMapper.updateCutomer(customer, rq);
 
-        customer.setNameCustomer(rq.getNameCustomer());
-        customer.setEmail(rq.getEmail());
-        customer.setAddress(rq.getAddress());
-        customer.setPhoneNumber(rq.getPhoneNumber());
-        customer.setLoyaltyPoint(rq.getLoyaltyPoint());
-        customer.setDoB(rq.getDoB());
-        customer.setStartDate(rq.getStartDate());
-        customer.setPassword(rq.getPassword());
-        customer.setLastDayUsing(rq.getLastDayUsing());
-        customer.setTypeCustomer(rq.getTypeCustomer());
-
-        return customerRepository.save(customer);
+        return customerMapper.toCustomerResponse(customerRepository.save(customer));
     }
 
     public void deleteCustomer(String id) {
         if (!customerRepository.existsById(id))
-            throw new RuntimeException("Customer ID is not found");
+            throw new AppException(ErrorCode.ID_NOT_FOUND);
         customerRepository.deleteById(id);
     }
 
-    public List<Customer> searchByName(String name) {
-        List<Customer> list = getAllCustomers();
+    public List<CustomerResponse> searchByName(String name) {
+        List<Customer> list = customerRepository.findAll();
         List<Customer> listResult = new ArrayList<>();
         list.forEach(t -> {
             if (t.getNameCustomer().contains(name))
                 listResult.add(t);
         });
-        return listResult;
+        return customerMapper.toCustomerResponses(listResult);
     }
 }

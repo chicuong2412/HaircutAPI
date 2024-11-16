@@ -5,10 +5,14 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.haircutAPI.HaircutAPI.ENUM.SuccessCode;
 import com.haircutAPI.HaircutAPI.dto.request.WorkerRequest.WorkerCreationRequest;
 import com.haircutAPI.HaircutAPI.dto.request.WorkerRequest.WorkerUpdateRequest;
-import com.haircutAPI.HaircutAPI.enity.Worker;
+import com.haircutAPI.HaircutAPI.dto.response.APIresponse;
+import com.haircutAPI.HaircutAPI.dto.response.WorkerResponse;
 import com.haircutAPI.HaircutAPI.services.WorkerService;
+
+import jakarta.validation.Valid;
 
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -25,33 +29,51 @@ public class WorkerController {
     private WorkerService workerService;
 
     @PostMapping
-    Worker createWorker(@RequestBody WorkerCreationRequest request) {
-        return workerService.createWorker(request);
+    APIresponse<WorkerResponse> createWorker(@RequestBody @Valid WorkerCreationRequest request) {
+        APIresponse<WorkerResponse> reponse = new APIresponse<>(SuccessCode.CREATE_SUCCESSFUL.getCode());
+        reponse.setMessage(SuccessCode.CREATE_SUCCESSFUL.getMessage());
+        reponse.setResult(workerService.createWorker(request));
+        return reponse;
     }
 
     @GetMapping
-    List<Worker> getWorkers() {
-        return workerService.getAllWorkers();
+    APIresponse<List<WorkerResponse>> getWorkers() {
+        APIresponse<List<WorkerResponse>> reponse = new APIresponse<>(SuccessCode.GET_DATA_SUCCESSFUL.getCode());
+        reponse.setMessage(SuccessCode.GET_DATA_SUCCESSFUL.getMessage());
+        reponse.setResult(workerService.getAllWorkers());
+        return reponse;
     }
 
     @GetMapping("/searchName/{name}")
-    public List<Worker> getListSearchByName(@PathVariable String name) {
-        return workerService.searchByName(name);
+    APIresponse<List<WorkerResponse>> getListSearchByName(@PathVariable String name) {
+        APIresponse<List<WorkerResponse>> reponse = new APIresponse<>(SuccessCode.GET_DATA_SUCCESSFUL.getCode());
+        reponse.setMessage(SuccessCode.GET_DATA_SUCCESSFUL.getMessage());
+        reponse.setResult(workerService.searchByName(name));
+        return reponse;
     }
 
     @GetMapping("/{WorkerID}")
-    public Worker getWorker(@PathVariable String WorkerID) {
-        return workerService.getWorkerbyID(WorkerID);
+    APIresponse<WorkerResponse> getWorker(@PathVariable String WorkerID) {
+        APIresponse<WorkerResponse> reponse = new APIresponse<>(SuccessCode.GET_DATA_SUCCESSFUL.getCode());
+        reponse.setMessage(SuccessCode.GET_DATA_SUCCESSFUL.getMessage());
+        reponse.setResult(workerService.getWorkerbyID(WorkerID));
+        return reponse;
     }
 
     @PutMapping("/{workerID}")
-    public Worker updateWorkerInfo(@PathVariable String workerID, @RequestBody WorkerUpdateRequest rq) {
-        return workerService.updateWorker(workerID, rq);
+    APIresponse<WorkerResponse> updateWorkerInfo(@PathVariable String workerID, @RequestBody WorkerUpdateRequest rq) {
+        APIresponse<WorkerResponse> reponse = new APIresponse<>(SuccessCode.UPDATE_DATA_SUCCESSFUL.getCode());
+        reponse.setMessage(SuccessCode.UPDATE_DATA_SUCCESSFUL.getMessage());
+        reponse.setResult(workerService.updateWorker(workerID, rq));
+        return reponse;
     }
 
     @DeleteMapping("/{workerID}")
-    public void deleteWorker(@PathVariable String workerID) {
+    APIresponse<String> deleteWorker(@PathVariable String workerID) {
         workerService.deleteWorker(workerID);
+        APIresponse<String> response = new APIresponse<>(SuccessCode.DELETE_SUCCESSFUL.getCode());
+        response.setMessage(SuccessCode.DELETE_SUCCESSFUL.getMessage());
+        return response;
     }
 
 }
