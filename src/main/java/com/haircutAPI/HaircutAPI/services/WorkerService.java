@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.haircutAPI.HaircutAPI.ENUM.ErrorCode;
@@ -27,7 +29,8 @@ public class WorkerService {
         if (workerRepository.existsByUsername(request.getUsername()))
             throw new AppException(ErrorCode.USERNAME_EXISTED);
         Worker worker = workerMapper.toWorker(request);
-
+        PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
+        worker.setPassword(passwordEncoder.encode(request.getPassword()));
         return workerMapper.toWorkerResponse(workerRepository.save(worker));
     }
 

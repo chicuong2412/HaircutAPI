@@ -7,7 +7,10 @@ public enum ErrorCode {
     UNCATEGORIZED_EXCEPTION(999, "Uncategorized error!!!"),
     USERNAME_LENGTH_INVALID(501, "Username length must be at least 6 characters"),
     PASSWORD_LENGTH_INVALID(502, "Password must be at least 8 characters"),
-    EMAIL_INVALID(503, "This email is not correct!!!")
+    EMAIL_INVALID(503, "This email is not correct!!!"),
+    USERNAME_NOT_EXISTED(405, "This username doesn't exist"),
+    LOGIN_FAILED(404, "Password is incorrect"),
+    WRONG_TOKEN(406, "This token is expired or does not exist")
     ;
 
     private int code;

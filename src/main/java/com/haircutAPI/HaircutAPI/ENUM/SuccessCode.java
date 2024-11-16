@@ -5,7 +5,8 @@ public enum SuccessCode {
     CREATE_SUCCESSFUL(101, "Successful"),
     GET_DATA_SUCCESSFUL(102, "Successful"),
     UPDATE_DATA_SUCCESSFUL(103,"Successful"),
-    DELETE_SUCCESSFUL(104, "Successful")
+    DELETE_SUCCESSFUL(104, "Successful"),
+    LOGIN_SUCCESSFUL(201, "Login successfully")
     ;
 
     
