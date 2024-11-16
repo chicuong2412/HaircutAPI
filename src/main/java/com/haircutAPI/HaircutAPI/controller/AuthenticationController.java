@@ -28,27 +28,12 @@ public class AuthenticationController {
 
     @PostMapping("/workers/login")
     APIresponse<AuthenticationResponse> loginForWorker(@RequestBody AuthenticationRequest rq) {
-        boolean loginFlag = authenticationService.authenticateWorker(rq);
-        APIresponse<AuthenticationResponse> rp = new APIresponse<>(1000);
-
-        rp.setResult(new AuthenticationResponse());
-        rp.getResult().setAuthenticated(loginFlag);
-
-        if (loginFlag) rp.getResult().setToken(authenticationService.generateJWT(rq.getUsername())); 
-        
-        return rp;
+        return authenticationService.authenticateWorker(rq);
     }
 
     @PostMapping("/customers/login")
     APIresponse<AuthenticationResponse> loginForCustomer(@RequestBody AuthenticationRequest rq) {
-        boolean loginFlag = authenticationService.authenticateCustomer(rq);
-        APIresponse<AuthenticationResponse> rp = new APIresponse<>(1000);
-
-        rp.setResult(new AuthenticationResponse());
-        rp.getResult().setAuthenticated(loginFlag);
-
-        if (loginFlag) rp.getResult().setToken(authenticationService.generateJWT(rq.getUsername())); 
-        return rp;
+        return authenticationService.authenticateCustomer(rq);
     }
 
     @PostMapping("/introspect")

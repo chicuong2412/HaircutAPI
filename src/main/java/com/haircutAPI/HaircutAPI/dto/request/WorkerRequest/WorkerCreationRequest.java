@@ -2,6 +2,8 @@ package com.haircutAPI.HaircutAPI.dto.request.WorkerRequest;
 
 import com.haircutAPI.HaircutAPI.ENUM.RoleEmployee;
 
+// import jakarta.persistence.EnumType;
+// import jakarta.persistence.Enumerated;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Size;
 import lombok.AccessLevel;

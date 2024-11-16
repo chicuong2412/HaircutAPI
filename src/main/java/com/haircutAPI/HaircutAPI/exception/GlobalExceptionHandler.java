@@ -18,7 +18,7 @@ public class GlobalExceptionHandler {
     ResponseEntity<APIresponse> handlingRuntimeException(Exception exception) {
         ErrorCode errCode = ErrorCode.UNCATEGORIZED_EXCEPTION;
         APIresponse rp = new APIresponse<>(errCode.getCode());
-        System.out.println(exception.getMessage());
+        System.out.println(exception);
         rp.setMessage(errCode.getMessage());
         return ResponseEntity.badRequest().body(rp);
     }
