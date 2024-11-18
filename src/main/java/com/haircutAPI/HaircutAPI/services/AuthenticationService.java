@@ -56,9 +56,9 @@ public class AuthenticationService {
 
         rp.setResult(new AuthenticationResponse());
         rp.getResult().setAuthenticated(loginFlag);
-        System.out.println(worker.getIdRole());
+
         String role = buildScope(worker.getId(), worker.getIdRole().name());
-        if (loginFlag) rp.getResult().setToken(generateJWT(rq.getUsername(), role)); 
+        if (loginFlag) rp.getResult().setToken(generateJWT(rq.getUsername(), role, worker.getId())); 
         
         return rp;
     }
@@ -74,7 +74,7 @@ public class AuthenticationService {
         rp.getResult().setAuthenticated(loginFlag);
 
         String role = buildScope(customer.getId(), customer.getTypeCustomer().name());
-        if (loginFlag) rp.getResult().setToken(generateJWT(rq.getUsername(), role));
+        if (loginFlag) rp.getResult().setToken(generateJWT(rq.getUsername(), role, customer.getId()));
         return rp;
     }
 
@@ -98,7 +98,7 @@ public class AuthenticationService {
         return rp;
     }
 
-    public String generateJWT(String username, String role) {
+    public String generateJWT(String username, String role, String id) {
 
         JWSHeader header = new JWSHeader(JWSAlgorithm.HS512);
 
@@ -107,6 +107,7 @@ public class AuthenticationService {
         .issuer("greatshang.com")
         .issueTime(new Date())
         .expirationTime(new Date(Instant.now().plus(1, ChronoUnit.HOURS).toEpochMilli()))
+        .claim("id", id)
         .claim("scope", role)
         .build();
 
@@ -128,7 +129,7 @@ public class AuthenticationService {
         User user = userRepository.findById(userID).orElseThrow(() -> new AppException(ErrorCode.ID_NOT_FOUND));
 
         user.getRoles().forEach(t -> {
-            System.out.println(t);
+            
             out.append(t).append(" ");
         });
         out.append(role);

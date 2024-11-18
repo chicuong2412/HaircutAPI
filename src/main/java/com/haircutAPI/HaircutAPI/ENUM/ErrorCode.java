@@ -10,7 +10,8 @@ public enum ErrorCode {
     EMAIL_INVALID(503, "This email is not correct!!!"),
     USERNAME_NOT_EXISTED(405, "This username doesn't exist"),
     LOGIN_FAILED(404, "Password is incorrect"),
-    WRONG_TOKEN(406, "This token is expired or does not exist")
+    WRONG_TOKEN(406, "This token is expired or does not exist"),
+    NOTNULL(407, "The field inputs must not be null")
     ;
 
     private int code;
