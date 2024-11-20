@@ -3,7 +3,6 @@ package com.haircutAPI.HaircutAPI.controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.haircutAPI.HaircutAPI.ENUM.SuccessCode;
@@ -39,9 +38,6 @@ public class WorkerController {
 
     @GetMapping
     APIresponse<List<WorkerResponse>> getWorkers() {
-        var authen = SecurityContextHolder.getContext().getAuthentication();
-        System.out.println(authen.getName());
-        System.out.println(authen.getAuthorities());
         APIresponse<List<WorkerResponse>> reponse = new APIresponse<>(SuccessCode.GET_DATA_SUCCESSFUL.getCode());
         reponse.setMessage(SuccessCode.GET_DATA_SUCCESSFUL.getMessage());
         reponse.setResult(workerService.getAllWorkers());

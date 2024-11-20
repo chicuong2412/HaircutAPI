@@ -1,6 +1,7 @@
 package com.haircutAPI.HaircutAPI.services;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -59,10 +60,8 @@ public class AppointmentService {
 
     public APIresponse<List<AppointmentResponse>> getAllAppointments() {
         var list = appointmentRepository.findAll();
-        var listDetails = appointmentDetailsRepository.findAll();
 
-        List<AppointmentResponse> result = appointmentMapper.toAppointmentResponses(list);
-        appointmentMapper.updateAppointmetResponses(result, listDetails);
+        List<AppointmentResponse> result = findAppointmentDetailsByListAppointment(list);
         APIresponse<List<AppointmentResponse>> rp = new APIresponse<>(SuccessCode.GET_DATA_SUCCESSFUL.getCode());
         rp.setResult(result);
         rp.setMessage(SuccessCode.GET_DATA_SUCCESSFUL.getMessage());
@@ -74,22 +73,19 @@ public class AppointmentService {
         APIresponse<AppointmentResponse> rp = new APIresponse<>(SuccessCode.GET_DATA_SUCCESSFUL.getCode());
         Appointment appointment = appointmentRepository.findById(id)
                 .orElseThrow(() -> new AppException(ErrorCode.DATA_INPUT_INVALID));
-        AppointmentDetails appointmentDetails = appointmentDetailsRepository.findById(id)
+        AppointmentDetails appointmentDetail = appointmentDetailsRepository.findById(id)
                 .orElseThrow(() -> new AppException(ErrorCode.DATA_INPUT_INVALID));
 
-        var appointmentRp = appointmentMapper.toAppointmentResponse(appointment);
-
-        appointmentMapper.updateAppointmetResponse(appointmentRp, appointmentDetails);
+        var appointmentRp = appointmentMapper.appointmentResponseGenerator(appointment, appointmentDetail);
 
         rp.setMessage(SuccessCode.GET_DATA_SUCCESSFUL.getMessage());
         rp.setResult(appointmentRp);
-
 
         return rp;
     }
 
     public APIresponse<String> updateAppointment(AppointmentUpdationRequest rq) {
-        
+
         String id = rq.getId();
         Appointment appointment = appointmentRepository.findById(id)
                 .orElseThrow(() -> new AppException(ErrorCode.DATA_INPUT_INVALID));
@@ -106,22 +102,38 @@ public class AppointmentService {
         return apIresponse;
     }
 
-    public void deleteAppointment(String id) {
+    public APIresponse<String> deleteAppointment(String id) {
         if (!appointmentRepository.existsById(id))
             throw new AppException(ErrorCode.DATA_INPUT_INVALID);
 
         appointmentRepository.deleteById(id);
         appointmentDetailsRepository.deleteById(id);
 
+        APIresponse<String> apIresponse = new APIresponse<>(SuccessCode.DELETE_SUCCESSFUL.getCode());
+        apIresponse.setMessage(SuccessCode.DELETE_SUCCESSFUL.getMessage());
+        return apIresponse;
+
     }
 
-    public boolean checkVerifiedAppointmentUpdationRequest(AppointmentUpdationRequest rq) {
-        if (rq.getId() == null) return false;
-        if (rq.getDateTime() == null) return false;
-        if (rq.getIdCombo() == null) return false;
-        if (rq.getIdCustomer() == null) return false;
+    public APIresponse<List<AppointmentResponse>> getAppointmentByCustomerID(String id) {
+        var list = appointmentRepository.findByIdCustomer(id);
 
-        return true;
+        List<AppointmentResponse> result = findAppointmentDetailsByListAppointment(list);
+        APIresponse<List<AppointmentResponse>> rp = new APIresponse<>(SuccessCode.GET_DATA_SUCCESSFUL.getCode());
+        rp.setResult(result);
+        rp.setMessage(SuccessCode.GET_DATA_SUCCESSFUL.getMessage());
+
+        return rp;
+    }
+
+    private List<AppointmentResponse> findAppointmentDetailsByListAppointment(List<Appointment> listAppointments) {
+        var list = new ArrayList<AppointmentResponse>();
+        for (Appointment appointment : listAppointments) {
+            AppointmentDetails appointmentDetail = appointmentDetailsRepository.findById(appointment.getId())
+                    .orElseThrow();
+            list.add(appointmentMapper.appointmentResponseGenerator(appointment, appointmentDetail));
+        }
+        return list;
     }
 
 }

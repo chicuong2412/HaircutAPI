@@ -23,22 +23,20 @@ public interface AppointmentMapper {
     List<AppointmentResponse> toAppointmentResponses(List<Appointment> appointments);
 
     List<AppointmentResponse> toAppointmentResponse(List<AppointmentDetails> appointmentDetails);
-
-
     
     void updateAppointment(@MappingTarget Appointment appointment, AppointmentUpdationRequest rq);
     void updateAppointment(@MappingTarget AppointmentDetails appointmentDetails, AppointmentUpdationRequest rq);
 
-    default void updateAppointmetResponses(@MappingTarget List<AppointmentResponse> rps,
-            List<AppointmentDetails> appointmentResponses) {
-        for (int i = 0; i < rps.size(); i++) {
-            rps.get(i).setIdCombo(appointmentResponses.get(i).getIdCombo());
-            rps.get(i).setIdService(appointmentResponses.get(i).getIdService());
-        }
-    }
-
-    default void updateAppointmetResponse(AppointmentResponse rp, AppointmentDetails appointmentDetails) {
-        rp.setIdCombo(appointmentDetails.getIdCombo());
-        rp.setIdService(appointmentDetails.getIdService());
+    default AppointmentResponse appointmentResponseGenerator(Appointment appointment, AppointmentDetails appointmentDetail) {
+        return AppointmentResponse.builder()
+        .id(appointment.getId())
+        .dateTime(appointment.getDateTime())
+        .idCombo(appointmentDetail.getIdCombo())
+        .idCustomer(appointment.getIdCustomer())
+        .idLocation(appointment.getIdLocation())
+        .idWorker(appointment.getIdWorker())
+        .status(appointment.getStatus())
+        .idService(appointmentDetail.getIdService())
+        .build();
     }
 }

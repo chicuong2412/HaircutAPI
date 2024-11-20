@@ -7,14 +7,17 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.haircutAPI.HaircutAPI.ENUM.ErrorCode;
+import com.haircutAPI.HaircutAPI.ENUM.SuccessCode;
 import com.haircutAPI.HaircutAPI.ENUM.UserType;
 import com.haircutAPI.HaircutAPI.dto.request.CustomerRequest.CustomerCreationRequest;
 import com.haircutAPI.HaircutAPI.dto.request.CustomerRequest.CustomerUpdateRequest;
+import com.haircutAPI.HaircutAPI.dto.response.APIresponse;
 import com.haircutAPI.HaircutAPI.dto.response.CustomerResponse;
 import com.haircutAPI.HaircutAPI.enity.Customer;
 import com.haircutAPI.HaircutAPI.enity.User;
@@ -34,19 +37,20 @@ public class CustomerService {
 
     @PreAuthorize("hasAuthority('SCOPE_ADMIN')")
     public CustomerResponse createCustomer(CustomerCreationRequest rq) {
-
-        if (userRepository.existsByUsername(rq.getUsername()))
+        if (customerRepository.existsByUsername(rq.getUsername()))
             throw new AppException(ErrorCode.USERNAME_EXISTED);
         PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
         User user = new User();
 
         user.setUsername(rq.getUsername());
         user.setPassword(passwordEncoder.encode(rq.getPassword()));
+        
         HashSet<String> role = new HashSet<>();
         role.add(UserType.CUSTOMER.name());
         user.setRoles(role);
-
-        Customer customer = customerMapper.toCustomer(rq);
+        userRepository.save(user);
+        Customer customer = new Customer();
+        customer = customerMapper.toCustomer(rq);
 
         customer.setPassword(passwordEncoder.encode(rq.getPassword()));
         customer.setId(user.getId());
@@ -93,5 +97,13 @@ public class CustomerService {
                 listResult.add(t);
         });
         return customerMapper.toCustomerResponses(listResult);
+    }
+
+    public APIresponse<CustomerResponse> getMyInfo(Authentication authen) {
+        APIresponse<CustomerResponse> rp = new APIresponse<>(SuccessCode.GET_DATA_SUCCESSFUL.getCode());
+        System.out.println(authen.getName());
+        Customer customer = customerRepository.findByUsername(authen.getName()).orElseThrow();
+        rp.setResult(customerMapper.toCustomerResponse(customer));
+        return rp;
     }
 }

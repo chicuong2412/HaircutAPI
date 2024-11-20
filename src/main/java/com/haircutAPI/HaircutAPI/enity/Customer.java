@@ -33,5 +33,4 @@ public class Customer {
     @Enumerated(EnumType.ORDINAL)
     CustomerTypes typeCustomer;
 
-
 }

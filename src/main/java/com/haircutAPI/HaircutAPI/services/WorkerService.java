@@ -46,11 +46,11 @@ public class WorkerService {
         HashSet<String> role = new HashSet<>();
         role.add(UserType.WORKER.name());
         user.setRoles(role);
+        userRepository.save(user);
         Worker worker = workerMapper.toWorker(request);
         System.out.println(worker.getIdRole());
 
         worker.setPassword(passwordEncoder.encode(request.getPassword()));
-        userRepository.save(user);
         worker.setId(user.getId());
 
         return workerMapper.toWorkerResponse(workerRepository.save(worker));

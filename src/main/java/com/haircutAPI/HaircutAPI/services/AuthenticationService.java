@@ -118,7 +118,6 @@ public class AuthenticationService {
             jwsObject.sign(new MACSigner(SIGNED_KEY.getBytes()));
             return jwsObject.serialize();
         } catch (JOSEException e) {
-            // TODO Auto-generated catch block
             
             throw new RuntimeException(e);
         }
