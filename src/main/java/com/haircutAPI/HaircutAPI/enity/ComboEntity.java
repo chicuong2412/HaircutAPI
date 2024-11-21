@@ -1,7 +1,5 @@
 package com.haircutAPI.HaircutAPI.enity;
 
-import java.util.List;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -12,22 +10,19 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.FieldDefaults;
 
-@Entity
 @Getter
 @Setter
+@Entity
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class Service {
-
-
+public class ComboEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(name = "idService")
+    @Column(name = "idCombo")
     String id;
 
     String name;
-    String Description;
+    String description;
     long duration;
     double rate;
     double price;
-    List<String> productsList;
 }

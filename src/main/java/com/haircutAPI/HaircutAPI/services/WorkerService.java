@@ -35,8 +35,8 @@ public class WorkerService {
     @PreAuthorize("hasAuthority('SCOPE_ADMIN')")
     public WorkerResponse createWorker(WorkerCreationRequest request) {
 
-        if (userRepository.existsByUsername(request.getUsername()))
-            throw new AppException(ErrorCode.USERNAME_EXISTED);
+        if (!checkWorkerCreationRq(request))
+            throw new AppException(ErrorCode.DATA_INPUT_INVALID);
 
         PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
 
@@ -95,5 +95,11 @@ public class WorkerService {
                 listResult.add(t);
         });
         return workerMapper.toWorkerResponses(listResult);
+    }
+
+    private boolean checkWorkerCreationRq(WorkerCreationRequest rq) {
+        if (workerRepository.existsByUsername(rq.getUsername()))
+            throw new AppException(ErrorCode.USERNAME_EXISTED);
+        return true;
     }
 }

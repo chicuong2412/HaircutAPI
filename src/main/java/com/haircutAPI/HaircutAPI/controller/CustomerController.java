@@ -70,8 +70,8 @@ public class CustomerController {
         return reponse;
     }
 
-    @PutMapping("/{customerID}")
-    APIresponse<CustomerResponse> updateCustomerInfo(@PathVariable String customerID, @RequestBody CustomerUpdateRequest rq) {
+    @PutMapping("/update/{customerID}")
+    APIresponse<CustomerResponse> updateCustomerInfo(@PathVariable String customerID, @RequestBody @Valid CustomerUpdateRequest rq) {
         APIresponse<CustomerResponse> reponse = new APIresponse<>(SuccessCode.UPDATE_DATA_SUCCESSFUL.getCode());
         reponse.setMessage(SuccessCode.UPDATE_DATA_SUCCESSFUL.getMessage());
         reponse.setResult(customerService.updateCustomer(customerID, rq));

@@ -7,6 +7,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.haircutAPI.HaircutAPI.ENUM.AppointmentStatus;
 import com.haircutAPI.HaircutAPI.ENUM.ErrorCode;
 import com.haircutAPI.HaircutAPI.ENUM.SuccessCode;
 import com.haircutAPI.HaircutAPI.dto.request.AppointmetRequest.AppointmentCreationRequest;
@@ -19,6 +20,7 @@ import com.haircutAPI.HaircutAPI.exception.DefinedException.AppException;
 import com.haircutAPI.HaircutAPI.mapper.AppointmentMapper;
 import com.haircutAPI.HaircutAPI.repositories.AppointmentDetailsRepository;
 import com.haircutAPI.HaircutAPI.repositories.AppointmentRepository;
+import com.haircutAPI.HaircutAPI.utils.ServicesUtils;
 
 @Service
 public class AppointmentService {
@@ -29,10 +31,11 @@ public class AppointmentService {
     AppointmentDetailsRepository appointmentDetailsRepository;
     @Autowired
     AppointmentMapper appointmentMapper;
+    @Autowired
+    ServicesUtils servicesUtils;
 
     public APIresponse<AppointmentResponse> createAppointment(AppointmentCreationRequest rq) {
-
-        if (!rq.getDateTime().isAfter(LocalDateTime.now()))
+        if (!checkValidInfomationRq(rq))
             throw new AppException(ErrorCode.DATA_INPUT_INVALID);
 
         Appointment appointment = new Appointment();
@@ -86,6 +89,9 @@ public class AppointmentService {
 
     public APIresponse<String> updateAppointment(AppointmentUpdationRequest rq) {
 
+        if (!checkValidInfomationUpdate(rq))
+            throw new AppException(ErrorCode.DATA_INPUT_INVALID);
+
         String id = rq.getId();
         Appointment appointment = appointmentRepository.findById(id)
                 .orElseThrow(() -> new AppException(ErrorCode.DATA_INPUT_INVALID));
@@ -134,6 +140,38 @@ public class AppointmentService {
             list.add(appointmentMapper.appointmentResponseGenerator(appointment, appointmentDetail));
         }
         return list;
+    }
+
+    private boolean checkValidInfomationRq(AppointmentCreationRequest rq) {
+        if (rq.getDateTime().isBefore(LocalDateTime.now()))
+            return false;
+
+        if (AppointmentStatus.WAITING.compareTo(rq.getStatus()) != 0)
+            return false;
+
+        if (!servicesUtils.isCustomerIdExisted(rq.getIdCustomer()))
+            return false;
+
+        if (!servicesUtils.isWorkerIdExisted(rq.getIdWorker()))
+            return false;
+
+        return true;
+    }
+
+    private boolean checkValidInfomationUpdate(AppointmentUpdationRequest rq) {
+        if (rq.getDateTime().isBefore(LocalDateTime.now()))
+            return false;
+
+        if (AppointmentStatus.WAITING.compareTo(rq.getStatus()) != 0)
+            return false;
+
+        if (!servicesUtils.isCustomerIdExisted(rq.getIdCustomer()))
+            return false;
+
+        if (!servicesUtils.isWorkerIdExisted(rq.getIdWorker()))
+            return false;
+
+        return true;
     }
 
 }

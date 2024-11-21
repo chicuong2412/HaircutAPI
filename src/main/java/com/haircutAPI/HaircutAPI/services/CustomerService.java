@@ -35,7 +35,6 @@ public class CustomerService {
     @Autowired
     UserRepository userRepository;
 
-    @PreAuthorize("hasAuthority('SCOPE_ADMIN')")
     public CustomerResponse createCustomer(CustomerCreationRequest rq) {
         if (customerRepository.existsByUsername(rq.getUsername()))
             throw new AppException(ErrorCode.USERNAME_EXISTED);
