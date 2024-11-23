@@ -1,4 +1,8 @@
-package com.haircutAPI.HaircutAPI.dto.request.ComboRequest;
+package com.haircutAPI.HaircutAPI.dto.request.LocationRequest;
+
+import java.time.LocalTime;
+
+import org.springframework.format.annotation.DateTimeFormat;
 
 import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
@@ -9,16 +13,24 @@ import lombok.experimental.FieldDefaults;
 @Getter
 @Setter
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class ComboCreationRequest {
+public class LocationUpdationRequest {
 
     @NotNull(message = "NOTNULL")
     String name;
+
     @NotNull(message = "NOTNULL")
-    String description;
+    String address;
+
     @NotNull(message = "NOTNULL")
-    long duration;
+    String city;
+
     @NotNull(message = "NOTNULL")
-    double rate;
+    String phoneNumber;
+
     @NotNull(message = "NOTNULL")
-    double price;
+    String email;
+
+    @NotNull(message = "NOTNULL")
+    @DateTimeFormat(pattern = "hh:mm")
+    LocalTime openHour;
 }

@@ -3,6 +3,9 @@ package com.haircutAPI.HaircutAPI.controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -58,9 +61,10 @@ public class AppointmentController {
         return appointmentService.deleteAppointment(appointmentID);
     }
 
-    @GetMapping("/getByIdCustomer/{customerID}")
-    public APIresponse<List<AppointmentResponse>> getMethodName(@PathVariable String customerID) {
-        return appointmentService.getAppointmentByCustomerID(customerID);
+    @GetMapping("/getByUsername/{username}")
+    public APIresponse<List<AppointmentResponse>> getMethodName(@PathVariable String username) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        return appointmentService.getAppointmentByCustomerUsername(username, authentication.getName());
     }
     
     

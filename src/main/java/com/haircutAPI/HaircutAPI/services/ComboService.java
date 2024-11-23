@@ -3,6 +3,7 @@ package com.haircutAPI.HaircutAPI.services;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import com.haircutAPI.HaircutAPI.ENUM.ErrorCode;
@@ -23,6 +24,7 @@ public class ComboService {
     @Autowired
     ComboMapper comboEntityMapper;
 
+    @PreAuthorize("hasAuthority('SCOPE_ADMIN')")
     public APIresponse<ComboResponse> createCombo(ComboCreationRequest rq) {
         APIresponse<ComboResponse> rp = new APIresponse<>(SuccessCode.CREATE_SUCCESSFUL.getCode());
         rp.setMessage(SuccessCode.CREATE_SUCCESSFUL.getMessage());
@@ -36,6 +38,7 @@ public class ComboService {
         return rp;
     }
 
+    @PreAuthorize("hasAuthority('SCOPE_ADMIN')")
     public APIresponse<ComboResponse> updateCombo(ComboUpdationRequest rq, String idCombo) {
 
         ComboEntity comboEntity = comboRepository.findById(idCombo)
@@ -53,15 +56,15 @@ public class ComboService {
         return rp;
     }
 
-    public APIresponse<ComboResponse> getComboEntity(String idService) {
-        ComboEntity comboEntity = comboRepository.findById(idService)
+    public APIresponse<ComboResponse> getComboEntity(String idCombo) {
+        ComboEntity comboEntity = comboRepository.findById(idCombo)
                 .orElseThrow(() -> new AppException(ErrorCode.ID_NOT_FOUND));
         APIresponse<ComboResponse> rp = new APIresponse<>(SuccessCode.GET_DATA_SUCCESSFUL.getCode());
         rp.setMessage(SuccessCode.GET_DATA_SUCCESSFUL.getMessage());
 
         rp.setResult(comboEntityMapper.toComboResponse(comboEntity));
 
-        return rp;        
+        return rp;
     }
 
     public APIresponse<List<ComboResponse>> getAllComboEntity() {
@@ -74,7 +77,10 @@ public class ComboService {
         return rp;
     }
 
-    public void deleteCombo(String idService) {
-        comboRepository.deleteById(idService);
+    @PreAuthorize("hasAuthority('SCOPE_ADMIN')")
+    public void deleteCombo(String idCombo) {
+        if (!comboRepository.existsById(idCombo))
+            throw new AppException(ErrorCode.ID_NOT_FOUND);
+        comboRepository.deleteById(idCombo);
     }
 }

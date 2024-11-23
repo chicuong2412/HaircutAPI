@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import com.haircutAPI.HaircutAPI.ENUM.AppointmentStatus;
@@ -34,6 +35,8 @@ public class AppointmentService {
     @Autowired
     ServicesUtils servicesUtils;
 
+    
+    
     public APIresponse<AppointmentResponse> createAppointment(AppointmentCreationRequest rq) {
         if (!checkValidInfomationRq(rq))
             throw new AppException(ErrorCode.DATA_INPUT_INVALID);
@@ -118,11 +121,12 @@ public class AppointmentService {
         APIresponse<String> apIresponse = new APIresponse<>(SuccessCode.DELETE_SUCCESSFUL.getCode());
         apIresponse.setMessage(SuccessCode.DELETE_SUCCESSFUL.getMessage());
         return apIresponse;
-
     }
 
-    public APIresponse<List<AppointmentResponse>> getAppointmentByCustomerID(String id) {
-        var list = appointmentRepository.findByIdCustomer(id);
+
+    @PreAuthorize("hasAuthority('SCOPE_ADMIN') or #username == #currentUsername")
+    public APIresponse<List<AppointmentResponse>> getAppointmentByCustomerUsername(String username, String currentUsername) {
+        var list = appointmentRepository.findByIdCustomer(servicesUtils.findCustomerIDByUsername(username));
 
         List<AppointmentResponse> result = findAppointmentDetailsByListAppointment(list);
         APIresponse<List<AppointmentResponse>> rp = new APIresponse<>(SuccessCode.GET_DATA_SUCCESSFUL.getCode());
@@ -155,6 +159,15 @@ public class AppointmentService {
         if (!servicesUtils.isWorkerIdExisted(rq.getIdWorker()))
             return false;
 
+        if (!servicesUtils.isLocationIdExisted(rq.getIdLocation()))
+            return false;
+
+        if (!servicesUtils.isIdServicesExisted(rq.getIdService()))
+            return false;
+
+        if (!servicesUtils.isIdCombosExisted(rq.getIdCombo()))
+            return false;
+
         return true;
     }
 
@@ -162,13 +175,19 @@ public class AppointmentService {
         if (rq.getDateTime().isBefore(LocalDateTime.now()))
             return false;
 
-        if (AppointmentStatus.WAITING.compareTo(rq.getStatus()) != 0)
-            return false;
-
         if (!servicesUtils.isCustomerIdExisted(rq.getIdCustomer()))
             return false;
 
         if (!servicesUtils.isWorkerIdExisted(rq.getIdWorker()))
+            return false;
+
+        if (!servicesUtils.isLocationIdExisted(rq.getIdLocation()))
+            return false;
+
+        if (!servicesUtils.isIdServicesExisted(rq.getIdService()))
+            return false;
+
+        if (!servicesUtils.isIdCombosExisted(rq.getIdCombo()))
             return false;
 
         return true;

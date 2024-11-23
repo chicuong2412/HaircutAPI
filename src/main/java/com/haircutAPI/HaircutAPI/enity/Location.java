@@ -1,5 +1,7 @@
 package com.haircutAPI.HaircutAPI.enity;
 
+import java.time.LocalTime;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -10,22 +12,27 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.FieldDefaults;
 
+@Entity
 @Getter
 @Setter
-@Entity
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class Product {
+public class Location {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(name = "idProduct")
+    @Column(name = "idLocation")
     String id;
 
     String name;
-    long stockQuantity;
 
-    String description;
-    double price;
-    double rate;
+    String address;
 
+    String city;
+
+    String phoneNumber;
+
+    String email;
+
+    LocalTime openHour;
+    
 }

@@ -3,6 +3,8 @@ package com.haircutAPI.HaircutAPI.dto.request.AppointmetRequest;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import org.springframework.format.annotation.DateTimeFormat;
+
 import com.haircutAPI.HaircutAPI.ENUM.AppointmentStatus;
 
 import jakarta.validation.constraints.NotNull;
@@ -29,6 +31,7 @@ public class AppointmentCreationRequest {
     String idLocation;
 
     @NotNull(message = "NOTNULL")
+    @DateTimeFormat(pattern = "dd-MM-yyyyThh:mm")
     LocalDateTime dateTime;
 
     @NotNull(message = "NOTNULL")

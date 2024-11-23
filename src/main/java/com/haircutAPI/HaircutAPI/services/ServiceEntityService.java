@@ -3,6 +3,7 @@ package com.haircutAPI.HaircutAPI.services;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import com.haircutAPI.HaircutAPI.ENUM.ErrorCode;
@@ -15,6 +16,7 @@ import com.haircutAPI.HaircutAPI.enity.ServiceEntity;
 import com.haircutAPI.HaircutAPI.exception.DefinedException.AppException;
 import com.haircutAPI.HaircutAPI.mapper.ServiceEntityMapper;
 import com.haircutAPI.HaircutAPI.repositories.ServiceRepository;
+import com.haircutAPI.HaircutAPI.utils.ServicesUtils;
 
 @Service
 public class ServiceEntityService {
@@ -23,10 +25,16 @@ public class ServiceEntityService {
     ServiceRepository serviceRepository;
     @Autowired
     ServiceEntityMapper serviceEntityMapper;
+    @Autowired
+    ServicesUtils servicesUtils;
 
+    @PreAuthorize("hasAuthority('SCOPE_ADMIN')")
     public APIresponse<ServiceResponse> createService(ServiceCreationRequest rq) {
         APIresponse<ServiceResponse> rp = new APIresponse<>(SuccessCode.CREATE_SUCCESSFUL.getCode());
         rp.setMessage(SuccessCode.CREATE_SUCCESSFUL.getMessage());
+
+        if (!servicesUtils.isIdProductsExisted(rq.getProductsList()))
+            throw new AppException(ErrorCode.DATA_INPUT_INVALID);
 
         ServiceEntity serviceEntity = serviceEntityMapper.toServiceEntity(rq);
 
@@ -37,6 +45,7 @@ public class ServiceEntityService {
         return rp;
     }
 
+    @PreAuthorize("hasAuthority('SCOPE_ADMIN')")
     public APIresponse<ServiceResponse> updateService(ServiceUpdationRequest rq, String idService) {
 
         ServiceEntity serviceEntity = serviceRepository.findById(idService)
@@ -63,7 +72,7 @@ public class ServiceEntityService {
 
         rp.setResult(serviceEntityMapper.toServiceResponse(serviceEntity));
 
-        return rp;        
+        return rp;
     }
 
     public APIresponse<List<ServiceResponse>> getAllServiceEntity() {
@@ -76,7 +85,12 @@ public class ServiceEntityService {
         return rp;
     }
 
+    @PreAuthorize("hasAuthority('SCOPE_ADMIN')")
     public void deleteServiceEntity(String idService) {
+
+        if (!serviceRepository.existsById(idService))
+            throw new AppException(ErrorCode.ID_NOT_FOUND);
+
         serviceRepository.deleteById(idService);
     }
 }

@@ -10,7 +10,6 @@ public interface AppointmentRepository extends JpaRepository<Appointment, String
     
     List<Appointment> findByIdCustomer(String idCustomer);
 
-    
 
 
 }
