@@ -18,7 +18,7 @@ public class GlobalExceptionHandler {
     ResponseEntity<APIresponse> handlingRuntimeException(Exception exception) {
         ErrorCode errCode = ErrorCode.UNCATEGORIZED_EXCEPTION;
         APIresponse rp = new APIresponse<>(errCode.getCode());
-        System.out.println(exception.getMessage());
+        System.out.println(exception);
         rp.setMessage(errCode.getMessage());
         return ResponseEntity.badRequest().body(rp);
     }
@@ -26,7 +26,7 @@ public class GlobalExceptionHandler {
     @SuppressWarnings("rawtypes")
     @ExceptionHandler(value = AppException.class)
     ResponseEntity<APIresponse> handlingAppException(AppException exception) {
-        System.out.println(exception.getMessage());
+        System.out.println(exception);
         ErrorCode code = exception.getErrCode();
         APIresponse rp = new APIresponse<>(code.getCode());
         rp.setMessage(code.getMessage());

@@ -3,6 +3,7 @@ package com.haircutAPI.HaircutAPI.controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -17,10 +18,11 @@ import com.haircutAPI.HaircutAPI.dto.request.CustomerRequest.CustomerCreationReq
 import com.haircutAPI.HaircutAPI.dto.request.CustomerRequest.CustomerUpdateRequest;
 import com.haircutAPI.HaircutAPI.dto.response.APIresponse;
 import com.haircutAPI.HaircutAPI.dto.response.CustomerResponse;
-import com.haircutAPI.HaircutAPI.enity.Customer;
 import com.haircutAPI.HaircutAPI.services.CustomerService;
 
 import jakarta.validation.Valid;
+import org.springframework.web.bind.annotation.RequestParam;
+
 
 @RestController
 @RequestMapping("/customers")
@@ -30,7 +32,7 @@ public class CustomerController {
     CustomerService customerService;
 
     @PostMapping
-    APIresponse<CustomerResponse> createWorker(@RequestBody @Valid CustomerCreationRequest request) {
+    APIresponse<CustomerResponse> createCustomer(@RequestBody @Valid CustomerCreationRequest request) {
         APIresponse<CustomerResponse> reponse = new APIresponse<>(SuccessCode.CREATE_SUCCESSFUL.getCode());
         reponse.setMessage(SuccessCode.CREATE_SUCCESSFUL.getMessage());
         reponse.setResult(customerService.createCustomer(request));
@@ -38,12 +40,19 @@ public class CustomerController {
     }
 
     @GetMapping
-    APIresponse<List<CustomerResponse>> getWorkers() {
+    APIresponse<List<CustomerResponse>> getCustomers() {
+        
         APIresponse<List<CustomerResponse>> reponse = new APIresponse<>(SuccessCode.GET_DATA_SUCCESSFUL.getCode());
         reponse.setMessage(SuccessCode.GET_DATA_SUCCESSFUL.getMessage());
         reponse.setResult(customerService.getAllCustomers());
         return reponse;
     }
+
+    @GetMapping("/getMyInfo")
+    public APIresponse<CustomerResponse> getMyInfo() {
+        return customerService.getMyInfo(SecurityContextHolder.getContext().getAuthentication());
+    }
+    
 
     @GetMapping("/searchName/{name}")
     APIresponse<List<CustomerResponse>> getListSearchByName(@PathVariable String name) {
@@ -54,15 +63,15 @@ public class CustomerController {
     }
 
     @GetMapping("/{customerID}")
-    APIresponse<CustomerResponse> getWorker(@PathVariable String customerID) {
+    APIresponse<CustomerResponse> getCustomer(@PathVariable String customerID) {
         APIresponse<CustomerResponse> reponse = new APIresponse<>(SuccessCode.GET_DATA_SUCCESSFUL.getCode());
         reponse.setMessage(SuccessCode.GET_DATA_SUCCESSFUL.getMessage());
         reponse.setResult(customerService.getCustomerbyID(customerID));
         return reponse;
     }
 
-    @PutMapping("/{customerID}")
-    APIresponse<CustomerResponse> updateWorkerInfo(@PathVariable String customerID, @RequestBody CustomerUpdateRequest rq) {
+    @PutMapping("/update/{customerID}")
+    APIresponse<CustomerResponse> updateCustomerInfo(@PathVariable String customerID, @RequestBody @Valid CustomerUpdateRequest rq) {
         APIresponse<CustomerResponse> reponse = new APIresponse<>(SuccessCode.UPDATE_DATA_SUCCESSFUL.getCode());
         reponse.setMessage(SuccessCode.UPDATE_DATA_SUCCESSFUL.getMessage());
         reponse.setResult(customerService.updateCustomer(customerID, rq));
@@ -70,7 +79,7 @@ public class CustomerController {
     }
 
     @DeleteMapping("/{customerID}")
-    APIresponse<String> deleteWorker(@PathVariable String customerID) {
+    APIresponse<String> deleteCustomer(@PathVariable String customerID) {
         customerService.deleteCustomer(customerID);
         APIresponse<String> response = new APIresponse<>(SuccessCode.DELETE_SUCCESSFUL.getCode());
         response.setMessage(SuccessCode.DELETE_SUCCESSFUL.getMessage());

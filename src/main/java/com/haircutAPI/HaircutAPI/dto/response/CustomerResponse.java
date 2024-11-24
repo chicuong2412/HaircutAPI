@@ -10,6 +10,7 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class CustomerResponse {
 
+    String username;
     String nameCustomer;
     double loyaltyPoint;
     String DoB;

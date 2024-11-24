@@ -10,6 +10,7 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class WorkerResponse {
 
+    String username;
     String nameWorker;
     String specialities;
     double salary;
