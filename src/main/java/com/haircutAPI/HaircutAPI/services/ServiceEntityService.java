@@ -1,5 +1,6 @@
 package com.haircutAPI.HaircutAPI.services;
 
+import java.util.HashSet;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +16,7 @@ import com.haircutAPI.HaircutAPI.dto.response.ServiceResponse;
 import com.haircutAPI.HaircutAPI.enity.ServiceEntity;
 import com.haircutAPI.HaircutAPI.exception.DefinedException.AppException;
 import com.haircutAPI.HaircutAPI.mapper.ServiceEntityMapper;
+import com.haircutAPI.HaircutAPI.repositories.ProductRepository;
 import com.haircutAPI.HaircutAPI.repositories.ServiceRepository;
 import com.haircutAPI.HaircutAPI.utils.ServicesUtils;
 
@@ -27,16 +29,19 @@ public class ServiceEntityService {
     ServiceEntityMapper serviceEntityMapper;
     @Autowired
     ServicesUtils servicesUtils;
+    @Autowired
+    ProductRepository productRepository;
 
     @PreAuthorize("hasAuthority('SCOPE_ADMIN')")
     public APIresponse<ServiceResponse> createService(ServiceCreationRequest rq) {
         APIresponse<ServiceResponse> rp = new APIresponse<>(SuccessCode.CREATE_SUCCESSFUL.getCode());
         rp.setMessage(SuccessCode.CREATE_SUCCESSFUL.getMessage());
 
-        if (!servicesUtils.isIdProductsExisted(rq.getProductsList()))
-            throw new AppException(ErrorCode.DATA_INPUT_INVALID);
+        var products = productRepository.findAllById(rq.getProductsList());
 
         ServiceEntity serviceEntity = serviceEntityMapper.toServiceEntity(rq);
+
+        serviceEntity.setProductsList(new HashSet<>(products));
 
         serviceRepository.save(serviceEntity);
 
@@ -52,7 +57,11 @@ public class ServiceEntityService {
                 .orElseThrow(() -> new AppException(ErrorCode.ID_NOT_FOUND));
         APIresponse<ServiceResponse> rp = new APIresponse<>(SuccessCode.UPDATE_DATA_SUCCESSFUL.getCode());
 
+        var products = productRepository.findAllById(rq.getProductsList());
+
         serviceEntityMapper.updateServiceEntity(serviceEntity, rq);
+
+        serviceEntity.setProductsList(new HashSet<>(products));
 
         serviceRepository.save(serviceEntity);
 

@@ -28,23 +28,23 @@ public class ProductController {
     @Autowired
     ProductService productService;
 
-    @PostMapping()
+    @PostMapping("/create")
     public APIresponse<ProductResponse> createService(@RequestBody @Valid ProductCreationRequest rq) {
         return productService.createProduct(rq);
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/update/{id}")
     public APIresponse<ProductResponse> updateService(@PathVariable String id, @RequestBody @Valid ProductUpdatioRequest rq) {
         return productService.updateProduct(rq, id);
     }
 
 
-    @GetMapping("/{id}")
+    @GetMapping("/getProductByID/{id}")
     public APIresponse<ProductResponse> getService(@PathVariable String id) {
         return productService.getProduct(id);
     }
 
-    @GetMapping("/getAllServices")
+    @GetMapping("/getProducts")
     public APIresponse<List<ProductResponse>> getAllServices() {
         return productService.getProducts();
     }

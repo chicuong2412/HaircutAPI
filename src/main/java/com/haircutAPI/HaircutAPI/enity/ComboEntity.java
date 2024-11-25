@@ -21,6 +21,9 @@ public class ComboEntity {
     String id;
 
     String name;
+    String imgSrc;
+
+    @Column(columnDefinition = "TEXT")
     String description;
     long duration;
     double rate;

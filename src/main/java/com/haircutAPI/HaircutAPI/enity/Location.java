@@ -25,6 +25,9 @@ public class Location {
 
     String name;
 
+    String imgSrc;
+
+    @Column(columnDefinition = "TEXT")
     String address;
 
     String city;

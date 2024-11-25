@@ -10,7 +10,7 @@ import com.haircutAPI.HaircutAPI.dto.request.ComboRequest.ComboUpdationRequest;
 import com.haircutAPI.HaircutAPI.dto.response.ComboResponse;
 import com.haircutAPI.HaircutAPI.enity.ComboEntity;
 
-@Mapper
+@Mapper(componentModel = "spring")
 public interface ComboMapper {
     ComboEntity toComboEntity(ComboCreationRequest rq);
 

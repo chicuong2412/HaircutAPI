@@ -10,7 +10,8 @@ import com.haircutAPI.HaircutAPI.dto.request.LocationRequest.LocationUpdationReq
 import com.haircutAPI.HaircutAPI.dto.response.LocationResponse;
 import com.haircutAPI.HaircutAPI.enity.Location;
 
-@Mapper
+
+@Mapper(componentModel = "spring")
 public interface LocationMapper {
 
     LocationResponse toLocationResponse(Location location);

@@ -1,10 +1,11 @@
 package com.haircutAPI.HaircutAPI.enity;
 
-import java.util.List;
+import java.util.Set;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import jakarta.persistence.ManyToMany;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
@@ -21,8 +22,11 @@ public class AppointmentDetails {
     @Column(name = "idAppointment")
     String id;
 
-    List<String> idService;
-    List<String> idCombo;
+
+    @ManyToMany
+    Set<ServiceEntity> idService;
+    @ManyToMany
+    Set<ComboEntity> idCombo;
 
     double price;
 

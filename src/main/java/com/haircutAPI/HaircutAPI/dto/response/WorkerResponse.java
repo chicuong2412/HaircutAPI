@@ -19,6 +19,6 @@ public class WorkerResponse {
     String email;
     String address;
     String phoneNumber;
-    int idLocation;
+    String idLocation;
 
 }

@@ -27,29 +27,29 @@ public class ComboController {
     @Autowired
     ComboService comboEntityService;
 
-    @PostMapping()
-    public APIresponse<ComboResponse> createService(@RequestBody @Valid ComboCreationRequest rq) {
+    @PostMapping("/create")
+    public APIresponse<ComboResponse> createCombo(@RequestBody @Valid ComboCreationRequest rq) {
         return comboEntityService.createCombo(rq);
     }
 
-    @PutMapping("/{id}")
-    public APIresponse<ComboResponse> updateService(@PathVariable String id, @RequestBody @Valid ComboUpdationRequest rq) {
+    @PutMapping("/update/{id}")
+    public APIresponse<ComboResponse> updateCombo(@PathVariable String id, @RequestBody @Valid ComboUpdationRequest rq) {
         return comboEntityService.updateCombo(rq, id);
     }
 
 
-    @GetMapping("/{id}")
-    public APIresponse<ComboResponse> getService(@PathVariable String id) {
+    @GetMapping("/getComboByID/{id}")
+    public APIresponse<ComboResponse> getCombo(@PathVariable String id) {
         return comboEntityService.getComboEntity(id);
     }
 
-    @GetMapping("/getAllCombo")
-    public APIresponse<List<ComboResponse>> getAllServices() {
+    @GetMapping("/getAllCombos")
+    public APIresponse<List<ComboResponse>> getAllCombos() {
         return comboEntityService.getAllComboEntity();
     }
     
     @DeleteMapping("/{idCombo}")
-    APIresponse<String> deleteCustomer(@PathVariable String idCombo) {
+    APIresponse<String> deleteCombo(@PathVariable String idCombo) {
         comboEntityService.deleteCombo(idCombo);
         APIresponse<String> response = new APIresponse<>(SuccessCode.DELETE_SUCCESSFUL.getCode());
         response.setMessage(SuccessCode.DELETE_SUCCESSFUL.getMessage());

@@ -30,7 +30,7 @@ public class Worker {
     String email;
     String address;
     String phoneNumber;
-    int idLocation;
+    String idLocation;
 
     @Enumerated(EnumType.ORDINAL)
     RoleEmployee idRole;

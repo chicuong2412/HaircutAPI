@@ -20,7 +20,8 @@ import org.springframework.security.web.SecurityFilterChain;
 public class SecurityConfig {
 
     private final String[] PublicEndpoints = { "/workers", "/customers", "/auth/workers/login", "/auth/introspect",
-            "/auth/customers/login" };
+            "/auth/customers/login", "/getLocations", "/getLocation/**", "/service/getServiceByID/**", "/service/getAllServices",
+            "/product/getProductByID/**", "/product/getProducts", "/combo/getComboByID/**", "/combo/getAllCombos" };
     @Value("${jwt.SIGNED_KEY}")
     protected String SIGNED_KEY;
 

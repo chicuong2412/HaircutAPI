@@ -1,12 +1,22 @@
 package com.haircutAPI.HaircutAPI.utils;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.method.P;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Service;
 
 import com.haircutAPI.HaircutAPI.ENUM.ErrorCode;
+import com.haircutAPI.HaircutAPI.enity.ComboEntity;
 import com.haircutAPI.HaircutAPI.enity.Customer;
+import com.haircutAPI.HaircutAPI.enity.ServiceEntity;
+import com.haircutAPI.HaircutAPI.enity.Worker;
 import com.haircutAPI.HaircutAPI.exception.DefinedException.AppException;
 import com.haircutAPI.HaircutAPI.repositories.ComboRepository;
 import com.haircutAPI.HaircutAPI.repositories.CustomerRepository;
@@ -82,4 +92,38 @@ public class ServicesUtils {
         return customer.getId();
     }
 
+    public HashSet<ServiceEntity> toServiceEntitiesSet(Set<String> listServices) {
+        return new HashSet<>(serviceRepository.findAllById(listServices));
+    }
+
+    public HashSet<ComboEntity> toComboEnitiesSet(Set<String> listCombos) {
+        return new HashSet<>(comboRepository.findAllById(listCombos));
+    }
+
+    public Customer getCustomerByID(String id) {
+        return customerRepository.findById(id).orElseThrow();
+    }
+
+    public boolean checkAuthoritesHasRole(Collection<GrantedAuthority> auts, String role) {
+        for (GrantedAuthority currRole : auts) {
+            if (currRole.getAuthority().compareTo(role) == 0) {
+                return true;
+            }
+                
+        }
+
+        return false;
+    }
+
+    public String getWorkerIdLocation(String username) {
+        return workerRepository.findByUsername(username).getIdLocation();
+    }
+
+    public Worker findWorkerByUsername(String username) {
+        return workerRepository.findByUsername(username);
+    }
+
+    public Worker findWorkerById(String username) {
+        return workerRepository.findById(username).orElseThrow(() -> new AppException(ErrorCode.ID_WORKER_NOT_FOUND));
+    }
 }

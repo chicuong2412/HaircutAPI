@@ -19,6 +19,7 @@ public class ProductResponse {
     String id;
 
     String name;
+    String imgSrc;
     long stockQuantity;
 
     String description;

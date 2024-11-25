@@ -18,6 +18,7 @@ public class ComboResponse {
 
     String id;
     String name;
+    String imgSrc;
     String description;
     long duration;
     double rate;

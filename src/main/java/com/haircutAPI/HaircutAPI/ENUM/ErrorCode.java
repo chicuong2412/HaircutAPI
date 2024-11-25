@@ -14,7 +14,8 @@ public enum ErrorCode {
     NOTNULL(407, "The field inputs must not be null"),
     ID_CUSTOMER_NOT_FOUND(408, "Id customer doesn't exist"),
     ID_WORKER_NOT_FOUND(409, "Id worker doesn't exist"),
-    ID_LOCATION_NOT_FOUND(409, "Id location doesn't exist")
+    ID_LOCATION_NOT_FOUND(409, "Id location doesn't exist"),
+    ACCESS_DENIED(430, "You don't have permissions to access this!!!")
     ;
 
     private int code;

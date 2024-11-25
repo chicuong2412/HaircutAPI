@@ -1,9 +1,11 @@
 package com.haircutAPI.HaircutAPI.dto.response;
 
 import java.time.LocalDateTime;
-import java.util.List;
+import java.util.Set;
 
 import com.haircutAPI.HaircutAPI.ENUM.AppointmentStatus;
+import com.haircutAPI.HaircutAPI.enity.ComboEntity;
+import com.haircutAPI.HaircutAPI.enity.ServiceEntity;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -31,6 +33,8 @@ public class AppointmentResponse {
 
     LocalDateTime dateTime;
 
-    List<String> idService;
-    List<String> idCombo;
+    Set<ServiceEntity> idService;
+    Set<ComboEntity> idCombo;
+
+    double price;
 }

@@ -1,12 +1,16 @@
 package com.haircutAPI.HaircutAPI.services;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -22,15 +26,22 @@ import com.haircutAPI.HaircutAPI.exception.DefinedException.AppException;
 import com.haircutAPI.HaircutAPI.mapper.WorkerMapper;
 import com.haircutAPI.HaircutAPI.repositories.UserRepository;
 import com.haircutAPI.HaircutAPI.repositories.WorkerRepository;
+import com.haircutAPI.HaircutAPI.utils.ServicesUtils;
+
+import lombok.AccessLevel;
+import lombok.experimental.FieldDefaults;
 
 @Service
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class WorkerService {
     @Autowired
-    private WorkerRepository workerRepository;
+    WorkerRepository workerRepository;
     @Autowired
-    private WorkerMapper workerMapper;
+    WorkerMapper workerMapper;
     @Autowired
-    private UserRepository userRepository;
+    UserRepository userRepository;
+    @Autowired
+    ServicesUtils servicesUtils;
 
     @PreAuthorize("hasAuthority('SCOPE_ADMIN')")
     public WorkerResponse createWorker(WorkerCreationRequest request) {
@@ -57,8 +68,8 @@ public class WorkerService {
     }
 
     @PreAuthorize("hasAuthority('SCOPE_ADMIN')")
-    public List<WorkerResponse> getAllWorkers() {
-        return workerMapper.toWorkerResponses(workerRepository.findAll());
+    public List<WorkerResponse> getAllWorkers(String name) {
+        return workerMapper.toWorkerResponses(workerRepository.filterByNameWorker(name, workerRepository.findAll()));
     }
 
     @PostAuthorize("returnObject.username == authentication.name or hasAuthority('SCOPE_ADMIN')")
@@ -95,6 +106,19 @@ public class WorkerService {
                 listResult.add(t);
         });
         return workerMapper.toWorkerResponses(listResult);
+    }
+
+    @SuppressWarnings("unchecked")
+    @PreAuthorize("hasAuthority('SCOPE_ADMIN') or hasAuthority('SCOPE_MANAGER')")
+    public List<WorkerResponse> getWorkersByIdLocation(String idLocation, String name, Authentication authentication) {
+        if (!servicesUtils.checkAuthoritesHasRole((Collection<GrantedAuthority>) authentication.getAuthorities(),
+                "SCOPE_ADMIN")) {
+            if (!servicesUtils.findWorkerByUsername(authentication.getName()).getIdLocation().equals(idLocation)) {
+                throw new AccessDeniedException("Access Denied");
+            }
+        }
+        List<Worker> listWorkerBeforeSearch = workerRepository.findAllByIdLocation(idLocation);
+        return workerMapper.toWorkerResponses(workerRepository.filterByNameWorker(name, listWorkerBeforeSearch));
     }
 
     private boolean checkWorkerCreationRq(WorkerCreationRequest rq) {

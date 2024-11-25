@@ -3,6 +3,7 @@ package com.haircutAPI.HaircutAPI.services;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import com.haircutAPI.HaircutAPI.ENUM.ErrorCode;
@@ -24,6 +25,7 @@ public class ProductService {
     @Autowired
     ProductMapper productMapper;
 
+    @PreAuthorize("hasAuthority('SCOPE_ADMIN')")
     public APIresponse<ProductResponse> createProduct(ProductCreationRequest rq) {
         Product product = productMapper.toProduct(rq);
 
@@ -38,6 +40,7 @@ public class ProductService {
         return rp;
     }
 
+    @PreAuthorize("hasAuthority('SCOPE_ADMIN')")
     public APIresponse<ProductResponse> updateProduct(ProductUpdatioRequest rq, String idProduct) {
         Product product = productRepository.findById(idProduct)
                 .orElseThrow(() -> new AppException(ErrorCode.ID_NOT_FOUND));
@@ -77,6 +80,7 @@ public class ProductService {
         return rp;
     }
 
+    @PreAuthorize("hasAuthority('SCOPE_ADMIN')")
     public void deleteProduct(String idProduct) {
         if (!productRepository.existsById(idProduct))
             throw new AppException(ErrorCode.ID_NOT_FOUND);

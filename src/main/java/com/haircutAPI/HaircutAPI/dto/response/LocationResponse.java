@@ -2,7 +2,6 @@ package com.haircutAPI.HaircutAPI.dto.response;
 
 import java.time.LocalTime;
 
-import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -22,6 +21,8 @@ public class LocationResponse {
     String id;
 
     String name;
+
+    String imgSrc;
 
     String address;
 

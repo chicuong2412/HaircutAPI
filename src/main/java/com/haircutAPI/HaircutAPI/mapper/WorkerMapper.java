@@ -10,7 +10,8 @@ import com.haircutAPI.HaircutAPI.dto.request.WorkerRequest.WorkerUpdateRequest;
 import com.haircutAPI.HaircutAPI.dto.response.WorkerResponse;
 import com.haircutAPI.HaircutAPI.enity.Worker;
 
-@Mapper
+
+@Mapper(componentModel = "spring")
 public interface WorkerMapper {
 
     Worker toWorker(WorkerCreationRequest rq);

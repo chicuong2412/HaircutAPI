@@ -10,7 +10,8 @@ import com.haircutAPI.HaircutAPI.dto.request.ProductRequest.ProductUpdatioReques
 import com.haircutAPI.HaircutAPI.dto.response.ProductResponse;
 import com.haircutAPI.HaircutAPI.enity.Product;
 
-@Mapper
+
+@Mapper(componentModel = "spring")
 public interface ProductMapper {
     
     ProductResponse toProductResponse(Product product);

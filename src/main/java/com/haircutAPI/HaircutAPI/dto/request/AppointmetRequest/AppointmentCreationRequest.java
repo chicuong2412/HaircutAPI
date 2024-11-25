@@ -1,7 +1,7 @@
 package com.haircutAPI.HaircutAPI.dto.request.AppointmetRequest;
 
 import java.time.LocalDateTime;
-import java.util.List;
+import java.util.Set;
 
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -35,9 +35,9 @@ public class AppointmentCreationRequest {
     LocalDateTime dateTime;
 
     @NotNull(message = "NOTNULL")
-    List<String> idService;
+    Set<String> idService;
     @NotNull(message = "NOTNULL")
-    List<String> idCombo;
+    Set<String> idCombo;
 
     @NotNull(message = "NOTNULL")
     double price;

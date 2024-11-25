@@ -19,6 +19,10 @@ public class ServiceUpdationRequest {
 
     @NotNull(message = "NOTNULL")
     String name;
+
+    @NotNull(message = "NOTNULL")
+    String imgSrc;
+
     @NotNull(message = "NOTNULL")
     String description;
     @NotNull(message = "NOTNULL")

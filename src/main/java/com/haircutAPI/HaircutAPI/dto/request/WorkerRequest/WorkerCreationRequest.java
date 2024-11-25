@@ -50,7 +50,7 @@ public class WorkerCreationRequest {
     String phoneNumber;
 
     @NotNull(message = "NOTNULL")
-    int idLocation;
+    String idLocation;
 
     @NotNull(message = "NOTNULL")
     RoleEmployee idRole;

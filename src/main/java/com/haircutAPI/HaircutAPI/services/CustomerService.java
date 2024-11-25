@@ -58,8 +58,8 @@ public class CustomerService {
     }
 
     @PreAuthorize("hasAuthority('SCOPE_ADMIN')")
-    public List<CustomerResponse> getAllCustomers() {
-        return customerMapper.toCustomerResponses(customerRepository.findAll());
+    public List<CustomerResponse> getAllCustomers(String name) {
+        return customerMapper.toCustomerResponses(customerRepository.filterByNameWorker(name, customerRepository.findAll()));
     }
 
     @PostAuthorize("returnObject.username == authentication.name or hasAuthority('SCOPE_ADMIN')")

@@ -13,6 +13,10 @@ public class ProductUpdatioRequest {
 
     @NotNull(message = "NOTNULL")
     String name;
+
+    @NotNull(message = "NOTNULL")
+    String imgSrc;
+
     @NotNull(message = "NOTNULL")
     long stockQuantity;
 

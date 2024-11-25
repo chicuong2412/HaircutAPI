@@ -10,7 +10,7 @@ import com.haircutAPI.HaircutAPI.dto.request.CustomerRequest.CustomerUpdateReque
 import com.haircutAPI.HaircutAPI.dto.response.CustomerResponse;
 import com.haircutAPI.HaircutAPI.enity.Customer;
 
-@Mapper
+@Mapper(componentModel = "spring")
 public interface CustomerMapper {
     Customer toCustomer(CustomerCreationRequest rq);
 

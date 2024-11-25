@@ -10,6 +10,11 @@ public interface AppointmentRepository extends JpaRepository<Appointment, String
     
     List<Appointment> findByIdCustomer(String idCustomer);
 
+    List<Appointment> findAllByIdLocation(String idLocation);
+
+    List<Appointment> findAllByIdWorker(String idWorker);
+
+    
 
 
 }

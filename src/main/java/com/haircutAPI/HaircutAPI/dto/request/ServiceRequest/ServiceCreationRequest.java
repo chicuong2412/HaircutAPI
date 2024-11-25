@@ -1,6 +1,7 @@
 package com.haircutAPI.HaircutAPI.dto.request.ServiceRequest;
 
 import java.util.List;
+import java.util.Set;
 
 import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
@@ -21,6 +22,10 @@ public class ServiceCreationRequest {
 
     @NotNull(message = "NOTNULL")
     String name;
+
+    @NotNull(message = "NOTNULL")
+    String imgSrc;
+
     @NotNull(message = "NOTNULL")
     String description;
     @NotNull(message = "NOTNULL")
@@ -29,5 +34,5 @@ public class ServiceCreationRequest {
     double rate;
     @NotNull(message = "NOTNULL")
     double price;
-    List<String> productsList;
+    Set<String> productsList;
 }

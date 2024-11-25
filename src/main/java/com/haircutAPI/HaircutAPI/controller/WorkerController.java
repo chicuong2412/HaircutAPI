@@ -3,6 +3,8 @@ package com.haircutAPI.HaircutAPI.controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.haircutAPI.HaircutAPI.ENUM.SuccessCode;
@@ -20,6 +22,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.PutMapping;
 
 @RestController
@@ -36,19 +39,11 @@ public class WorkerController {
         return reponse;
     }
 
-    @GetMapping
-    APIresponse<List<WorkerResponse>> getWorkers() {
+    @GetMapping("/getAllWorkers")
+    APIresponse<List<WorkerResponse>> getWorkers(@RequestParam ("name") String name) {
         APIresponse<List<WorkerResponse>> reponse = new APIresponse<>(SuccessCode.GET_DATA_SUCCESSFUL.getCode());
         reponse.setMessage(SuccessCode.GET_DATA_SUCCESSFUL.getMessage());
-        reponse.setResult(workerService.getAllWorkers());
-        return reponse;
-    }
-
-    @GetMapping("/searchName/{name}")
-    APIresponse<List<WorkerResponse>> getListSearchByName(@PathVariable String name) {
-        APIresponse<List<WorkerResponse>> reponse = new APIresponse<>(SuccessCode.GET_DATA_SUCCESSFUL.getCode());
-        reponse.setMessage(SuccessCode.GET_DATA_SUCCESSFUL.getMessage());
-        reponse.setResult(workerService.searchByName(name));
+        reponse.setResult(workerService.getAllWorkers(name));
         return reponse;
     }
 
@@ -57,6 +52,15 @@ public class WorkerController {
         APIresponse<WorkerResponse> reponse = new APIresponse<>(SuccessCode.GET_DATA_SUCCESSFUL.getCode());
         reponse.setMessage(SuccessCode.GET_DATA_SUCCESSFUL.getMessage());
         reponse.setResult(workerService.getWorkerbyID(WorkerID));
+        return reponse;
+    }
+
+    @GetMapping("/getByIdLocation/{idLocation}")
+    APIresponse<List<WorkerResponse>> getByIdLocation(@PathVariable String idLocation, @RequestParam ("name") String name) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        APIresponse<List<WorkerResponse>> reponse = new APIresponse<>(SuccessCode.GET_DATA_SUCCESSFUL.getCode());
+        reponse.setMessage(SuccessCode.GET_DATA_SUCCESSFUL.getMessage());
+        reponse.setResult(workerService.getWorkersByIdLocation(idLocation, name, authentication));
         return reponse;
     }
 
@@ -75,5 +79,7 @@ public class WorkerController {
         response.setMessage(SuccessCode.DELETE_SUCCESSFUL.getMessage());
         return response;
     }
+
+    
 
 }

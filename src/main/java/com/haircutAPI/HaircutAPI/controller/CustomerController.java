@@ -40,26 +40,17 @@ public class CustomerController {
     }
 
     @GetMapping
-    APIresponse<List<CustomerResponse>> getCustomers() {
+    APIresponse<List<CustomerResponse>> getCustomers(@RequestParam ("name") String name) {
         
         APIresponse<List<CustomerResponse>> reponse = new APIresponse<>(SuccessCode.GET_DATA_SUCCESSFUL.getCode());
         reponse.setMessage(SuccessCode.GET_DATA_SUCCESSFUL.getMessage());
-        reponse.setResult(customerService.getAllCustomers());
+        reponse.setResult(customerService.getAllCustomers(name));
         return reponse;
     }
 
     @GetMapping("/getMyInfo")
     public APIresponse<CustomerResponse> getMyInfo() {
         return customerService.getMyInfo(SecurityContextHolder.getContext().getAuthentication());
-    }
-    
-
-    @GetMapping("/searchName/{name}")
-    APIresponse<List<CustomerResponse>> getListSearchByName(@PathVariable String name) {
-        APIresponse<List<CustomerResponse>> reponse = new APIresponse<>(SuccessCode.GET_DATA_SUCCESSFUL.getCode());
-        reponse.setMessage(SuccessCode.GET_DATA_SUCCESSFUL.getMessage());
-        reponse.setResult(customerService.searchByName(name));
-        return reponse;
     }
 
     @GetMapping("/{customerID}")

@@ -1,6 +1,7 @@
 package com.haircutAPI.HaircutAPI.exception;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -46,6 +47,15 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(value = JOSEException.class)
     ResponseEntity<APIresponse> handlingJOSEException(JOSEException e) {
         ErrorCode errCode = ErrorCode.WRONG_TOKEN;
+        APIresponse rp = new APIresponse<>(errCode.getCode());
+        rp.setMessage(errCode.getMessage());
+        return ResponseEntity.badRequest().body(rp);
+    }
+
+    @SuppressWarnings("rawtypes")
+    @ExceptionHandler(value = AccessDeniedException.class)
+    ResponseEntity<APIresponse> handlingJOSEException(AccessDeniedException e) {
+        ErrorCode errCode = ErrorCode.ACCESS_DENIED;
         APIresponse rp = new APIresponse<>(errCode.getCode());
         rp.setMessage(errCode.getMessage());
         return ResponseEntity.badRequest().body(rp);
