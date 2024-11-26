@@ -87,17 +87,6 @@ public class CustomerService {
         customerRepository.deleteById(id);
     }
 
-    @PreAuthorize("hasAuthority('SCOPE_ADMIN')")
-    public List<CustomerResponse> searchByName(String name) {
-        List<Customer> list = customerRepository.findAll();
-        List<Customer> listResult = new ArrayList<>();
-        list.forEach(t -> {
-            if (t.getNameCustomer().contains(name))
-                listResult.add(t);
-        });
-        return customerMapper.toCustomerResponses(listResult);
-    }
-
     public APIresponse<CustomerResponse> getMyInfo(Authentication authen) {
         APIresponse<CustomerResponse> rp = new APIresponse<>(SuccessCode.GET_DATA_SUCCESSFUL.getCode());
         System.out.println(authen.getName());

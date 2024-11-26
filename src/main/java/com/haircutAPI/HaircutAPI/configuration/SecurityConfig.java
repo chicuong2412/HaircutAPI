@@ -20,8 +20,12 @@ import org.springframework.security.web.SecurityFilterChain;
 public class SecurityConfig {
 
     private final String[] PublicEndpoints = { "/workers", "/customers", "/auth/workers/login", "/auth/introspect",
-            "/auth/customers/login", "/getLocations", "/getLocation/**", "/service/getServiceByID/**", "/service/getAllServices",
-            "/product/getProductByID/**", "/product/getProducts", "/combo/getComboByID/**", "/combo/getAllCombos" };
+            "/auth/customers/login" };
+    private final String[] publicGetEndpoints = { "/location/getLocations", "/location/getLocation/**",
+            "/service/getServiceByID/**",
+            "/service/getAllServices",
+            "/product/getProductByID/**", "/product/getProducts", "/combo/getComboByID/**", "/combo/getAllCombos",
+            "/combo/getComboByID/**" };
     @Value("${jwt.SIGNED_KEY}")
     protected String SIGNED_KEY;
 
@@ -29,7 +33,7 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
         httpSecurity.authorizeHttpRequests(
                 rq -> rq.requestMatchers(HttpMethod.POST, PublicEndpoints)
-                        .permitAll()
+                        .permitAll().requestMatchers(HttpMethod.GET, publicGetEndpoints).permitAll()
                         .anyRequest().authenticated());
 
         httpSecurity.oauth2ResourceServer(oauth2 -> {
