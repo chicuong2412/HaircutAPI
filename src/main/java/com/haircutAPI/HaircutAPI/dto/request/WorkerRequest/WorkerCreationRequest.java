@@ -2,8 +2,8 @@ package com.haircutAPI.HaircutAPI.dto.request.WorkerRequest;
 
 import com.haircutAPI.HaircutAPI.ENUM.RoleEmployee;
 
-// import jakarta.persistence.EnumType;
-// import jakarta.persistence.Enumerated;
+import java.time.LocalDate;
+
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -37,7 +37,7 @@ public class WorkerCreationRequest {
     double Rate;
 
     @NotNull(message = "NOTNULL")
-    String DoB;
+    LocalDate DoB;
 
     @Email(message = "EMAIL_INVALID")
     @NotNull(message = "NOTNULL")
@@ -56,6 +56,6 @@ public class WorkerCreationRequest {
     RoleEmployee idRole;
     
     @NotNull(message = "NOTNULL")
-    String startDate;
+    LocalDate startDate;
 
 }

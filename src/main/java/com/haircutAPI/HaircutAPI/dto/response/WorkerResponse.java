@@ -1,5 +1,7 @@
 package com.haircutAPI.HaircutAPI.dto.response;
 
+import java.time.LocalDate;
+
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
@@ -15,7 +17,7 @@ public class WorkerResponse {
     String specialities;
     double salary;
     double Rate;
-    String DoB;
+    LocalDate DoB;
     String email;
     String address;
     String phoneNumber;

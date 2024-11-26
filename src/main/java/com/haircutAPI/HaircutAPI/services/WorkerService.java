@@ -46,8 +46,7 @@ public class WorkerService {
     @PreAuthorize("hasAuthority('SCOPE_ADMIN')")
     public WorkerResponse createWorker(WorkerCreationRequest request) {
 
-        if (!checkWorkerCreationRq(request))
-            throw new AppException(ErrorCode.DATA_INPUT_INVALID);
+        checkWorkerCreationRq(request);
 
         PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
 
@@ -124,6 +123,8 @@ public class WorkerService {
     private boolean checkWorkerCreationRq(WorkerCreationRequest rq) {
         if (workerRepository.existsByUsername(rq.getUsername()))
             throw new AppException(ErrorCode.USERNAME_EXISTED);
+        if (!servicesUtils.isLocationIdExisted(rq.getIdLocation()))
+            throw new AppException(ErrorCode.ID_LOCATION_NOT_FOUND);
         return true;
     }
 }

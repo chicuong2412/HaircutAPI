@@ -156,7 +156,7 @@ public class AppointmentService {
         appointmentDetails.setIdService(servicesUtils.toServiceEntitiesSet(rq.getIdService()));
         appointmentDetails.setIdCombo(servicesUtils.toComboEnitiesSet(rq.getIdCombo()));
 
-        //Save entities
+        // Save entities
         appointmentDetailsRepository.save(appointmentDetails);
         appointmentRepository.save(appointment);
 
@@ -272,6 +272,9 @@ public class AppointmentService {
 
         if (!servicesUtils.isLocationIdExisted(rq.getIdLocation()))
             return false;
+        
+        if (!servicesUtils.findWorkerById(rq.getIdWorker()).getIdLocation().equals(rq.getIdLocation()))
+            return false;
 
         return true;
     }
@@ -287,6 +290,9 @@ public class AppointmentService {
             return false;
 
         if (!servicesUtils.isLocationIdExisted(rq.getIdLocation()))
+            return false;
+
+        if (!servicesUtils.findWorkerById(rq.getIdWorker()).getIdLocation().equals(rq.getIdLocation()))
             return false;
 
         return true;

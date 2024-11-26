@@ -1,5 +1,10 @@
 package com.haircutAPI.HaircutAPI.enity;
 
+import java.time.LocalDate;
+
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.format.annotation.DateTimeFormat.ISO;
+
 import com.haircutAPI.HaircutAPI.ENUM.RoleEmployee;
 
 import jakarta.persistence.Entity;
@@ -26,7 +31,7 @@ public class Worker {
     String specialities;
     double salary;
     double Rate;
-    String DoB;
+    LocalDate DoB;
     String email;
     String address;
     String phoneNumber;
@@ -34,7 +39,7 @@ public class Worker {
 
     @Enumerated(EnumType.ORDINAL)
     RoleEmployee idRole;
-    String startDate;
+    LocalDate startDate;
 
     
 

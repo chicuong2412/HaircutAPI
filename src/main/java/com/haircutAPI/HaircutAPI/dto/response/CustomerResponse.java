@@ -1,5 +1,7 @@
 package com.haircutAPI.HaircutAPI.dto.response;
 
+import java.time.LocalDate;
+
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
@@ -13,11 +15,11 @@ public class CustomerResponse {
     String username;
     String nameCustomer;
     double loyaltyPoint;
-    String DoB;
+    LocalDate DoB;
     String email;
     String address;
     String phoneNumber;
-    String startDate;
+    LocalDate startDate;
     String lastDayUsing;
 
 }

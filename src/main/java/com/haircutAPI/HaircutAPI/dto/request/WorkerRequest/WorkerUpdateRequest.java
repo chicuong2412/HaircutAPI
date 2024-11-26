@@ -2,6 +2,8 @@ package com.haircutAPI.HaircutAPI.dto.request.WorkerRequest;
 
 import com.haircutAPI.HaircutAPI.ENUM.RoleEmployee;
 
+import java.time.LocalDate;
+
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -28,7 +30,7 @@ public class WorkerUpdateRequest {
     @NotNull(message = "NOTNULL")
     double Rate;
     @NotNull(message = "NOTNULL")
-    String DoB;
+    LocalDate DoB;
     @Email(message = "EMAIL_INVALID")
     @NotNull(message = "NOTNULL")
     String email;
@@ -41,6 +43,6 @@ public class WorkerUpdateRequest {
     @NotNull(message = "NOTNULL")
     RoleEmployee idRole;
     @NotNull(message = "NOTNULL")
-    String startDate;
+    LocalDate startDate;
 
 }

@@ -2,6 +2,10 @@ package com.haircutAPI.HaircutAPI.enity;
 
 import com.haircutAPI.HaircutAPI.ENUM.CustomerTypes;
 
+import java.time.LocalDate;
+
+import org.springframework.format.annotation.DateTimeFormat;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -23,12 +27,15 @@ public class Customer {
     String password;
     String nameCustomer;
     double loyaltyPoint;
-    String DoB;
+    @DateTimeFormat(pattern = "dd-MM-yyyy")
+    LocalDate DoB;
     String email;
     String address;
     String phoneNumber;
-    String startDate;
-    String lastDayUsing;
+    @DateTimeFormat(pattern = "dd-MM-yyyy")
+    LocalDate startDate;
+    @DateTimeFormat(pattern = "dd-MM-yyyy")
+    LocalDate lastDayUsing;
 
     @Enumerated(EnumType.ORDINAL)
     CustomerTypes typeCustomer;
