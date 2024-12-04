@@ -1,6 +1,5 @@
 package com.haircutAPI.HaircutAPI.dto.request.ServiceRequest;
 
-import java.util.List;
 import java.util.Set;
 
 import jakarta.validation.constraints.NotNull;

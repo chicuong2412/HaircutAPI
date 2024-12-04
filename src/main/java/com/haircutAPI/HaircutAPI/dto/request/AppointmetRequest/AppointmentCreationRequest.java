@@ -31,7 +31,7 @@ public class AppointmentCreationRequest {
     String idLocation;
 
     @NotNull(message = "NOTNULL")
-    @DateTimeFormat(pattern = "dd-MM-yyyyThh:mm")
+    @DateTimeFormat(pattern = "dd-MM-yyyyThh:mm") 
     LocalDateTime dateTime;
 
     @NotNull(message = "NOTNULL")

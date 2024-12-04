@@ -1,10 +1,8 @@
 package com.haircutAPI.HaircutAPI.dto.request.CustomerRequest;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.haircutAPI.HaircutAPI.ENUM.CustomerTypes;
 
 import java.time.LocalDate;
-import java.util.Date;
 
 import org.springframework.format.annotation.DateTimeFormat;
 

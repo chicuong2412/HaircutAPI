@@ -3,7 +3,6 @@ package com.haircutAPI.HaircutAPI.dto.request.CustomerRequest;
 import com.haircutAPI.HaircutAPI.ENUM.CustomerTypes;
 
 import java.time.LocalDate;
-import java.util.Date;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Size;
