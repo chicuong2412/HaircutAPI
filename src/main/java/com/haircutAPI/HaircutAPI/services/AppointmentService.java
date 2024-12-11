@@ -70,7 +70,9 @@ public class AppointmentService {
         appointmentDetails.setId(appointment.getId());
         appointmentDetailsRepository.save(appointmentDetails);
 
-        rp.setResult(appointmentMapper.appointmentResponseGenerator(appointment, appointmentDetails));
+        rp.setResult(appointmentMapper.appointmentResponseGenerator(appointment, appointmentDetails,
+                servicesUtils.getCustomerByID(appointment.getIdCustomer()),
+                servicesUtils.findWorkerById(appointment.getIdWorker())));
 
         return rp;
     }
@@ -112,7 +114,9 @@ public class AppointmentService {
 
         }
 
-        var appointmentRp = appointmentMapper.appointmentResponseGenerator(appointment, appointmentDetail);
+        var appointmentRp = appointmentMapper.appointmentResponseGenerator(appointment, appointmentDetail,
+                servicesUtils.getCustomerByID(appointment.getIdCustomer()),
+                servicesUtils.findWorkerById(appointment.getIdWorker()));
 
         rp.setMessage(SuccessCode.GET_DATA_SUCCESSFUL.getMessage());
         rp.setResult(appointmentRp);
@@ -162,7 +166,9 @@ public class AppointmentService {
 
         APIresponse<AppointmentResponse> apIresponse = new APIresponse<>(SuccessCode.UPDATE_DATA_SUCCESSFUL.getCode());
         apIresponse.setMessage(SuccessCode.UPDATE_DATA_SUCCESSFUL.getMessage());
-        apIresponse.setResult(appointmentMapper.appointmentResponseGenerator(appointment, appointmentDetails));
+        apIresponse.setResult(appointmentMapper.appointmentResponseGenerator(appointment, appointmentDetails,
+                servicesUtils.getCustomerByID(appointment.getIdCustomer()),
+                servicesUtils.findWorkerById(appointment.getIdWorker())));
 
         return apIresponse;
     }
@@ -252,7 +258,9 @@ public class AppointmentService {
             AppointmentDetails appointmentDetail = appointmentDetailsRepository.findById(appointment.getId())
                     .orElseThrow();
             listAppointmentResponses
-                    .add(appointmentMapper.appointmentResponseGenerator(appointment, appointmentDetail));
+                    .add(appointmentMapper.appointmentResponseGenerator(appointment, appointmentDetail,
+                            servicesUtils.getCustomerByID(appointment.getIdCustomer()),
+                            servicesUtils.findWorkerById(appointment.getIdWorker())));
         }
         return listAppointmentResponses;
     }
@@ -272,7 +280,7 @@ public class AppointmentService {
 
         if (!servicesUtils.isLocationIdExisted(rq.getIdLocation()))
             return false;
-        
+
         if (!servicesUtils.findWorkerById(rq.getIdWorker()).getIdLocation().equals(rq.getIdLocation()))
             return false;
 

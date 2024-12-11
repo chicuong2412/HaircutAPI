@@ -2,6 +2,8 @@ package com.haircutAPI.HaircutAPI.dto.response;
 
 import java.time.LocalDate;
 
+import com.haircutAPI.HaircutAPI.enity.Location;
+
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
@@ -12,6 +14,7 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class WorkerResponse {
 
+    String id;
     String username;
     String nameWorker;
     String specialities;
@@ -21,6 +24,6 @@ public class WorkerResponse {
     String email;
     String address;
     String phoneNumber;
-    String idLocation;
+    Location location;
 
 }

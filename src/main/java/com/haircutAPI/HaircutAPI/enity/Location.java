@@ -19,7 +19,6 @@ import lombok.experimental.FieldDefaults;
 public class Location {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "idLocation")
     String id;
 

@@ -1,5 +1,6 @@
 package com.haircutAPI.HaircutAPI.utils;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
@@ -10,11 +11,14 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Service;
 
 import com.haircutAPI.HaircutAPI.ENUM.ErrorCode;
+import com.haircutAPI.HaircutAPI.dto.response.WorkerResponse;
 import com.haircutAPI.HaircutAPI.enity.ComboEntity;
 import com.haircutAPI.HaircutAPI.enity.Customer;
+import com.haircutAPI.HaircutAPI.enity.Location;
 import com.haircutAPI.HaircutAPI.enity.ServiceEntity;
 import com.haircutAPI.HaircutAPI.enity.Worker;
 import com.haircutAPI.HaircutAPI.exception.DefinedException.AppException;
+import com.haircutAPI.HaircutAPI.mapper.WorkerMapper;
 import com.haircutAPI.HaircutAPI.repositories.ComboRepository;
 import com.haircutAPI.HaircutAPI.repositories.CustomerRepository;
 import com.haircutAPI.HaircutAPI.repositories.LocationRepository;
@@ -37,6 +41,8 @@ public class ServicesUtils {
     ComboRepository comboRepository;
     @Autowired
     ProductRepository productRepository;
+    @Autowired
+    WorkerMapper workerMapper;
 
     public boolean isCustomerIdExisted(String customerID) {
         return customerRepository.existsById(customerID);
@@ -54,12 +60,33 @@ public class ServicesUtils {
         return locationRepository.existsById(idLocation);
     }
 
+    public Location findLocationByID(String idLocation) {
+        return locationRepository.findById(idLocation).orElseThrow();
+    }
+
     public boolean isIdServicesExisted(List<String> idServices) {
         for (String idService : idServices) {
             if (!serviceRepository.existsById(idService))
                 return false;
         }
         return true;
+    }
+
+    public List<WorkerResponse> addAllLocationEntity(List<Worker> pre) {
+        List<WorkerResponse> list = new ArrayList<>();
+        for (Worker preResponse : pre) {
+            WorkerResponse rp = workerMapper.toWorkerResponse(preResponse);
+            rp.setLocation(findLocationByID(preResponse.getIdLocation()));
+            list.add(rp);
+        }
+        return list;
+    }
+
+    public WorkerResponse addLocationEntity(Worker worker) {
+        WorkerResponse rp = workerMapper.toWorkerResponse(worker);
+        rp.setLocation(findLocationByID(worker.getIdLocation()));
+
+        return rp;
     }
 
     public boolean isIdCombosExisted(List<String> idCombos) {
@@ -106,7 +133,7 @@ public class ServicesUtils {
             if (currRole.getAuthority().compareTo(role) == 0) {
                 return true;
             }
-                
+
         }
 
         return false;
@@ -122,5 +149,21 @@ public class ServicesUtils {
 
     public Worker findWorkerById(String username) {
         return workerRepository.findById(username).orElseThrow(() -> new AppException(ErrorCode.ID_WORKER_NOT_FOUND));
+    }
+
+    public String idGenerator(String prefix, String typeEntity) {
+        if (typeEntity.equals("worker")) {
+            return prefix + (workerRepository.count() + 1);
+        } else if (typeEntity.equals("customer")) {
+            return prefix + (customerRepository.count() + 1);
+        } else if (typeEntity.equals("product")) {
+            return prefix + (productRepository.count() + 1);
+        } else if (typeEntity.equals("service")) {
+            return prefix + (serviceRepository.count() + 1);
+        } else if (typeEntity.equals("combo")) {
+            return prefix + (comboRepository.count() + 1);
+        }  else {
+            return prefix + (locationRepository.count() + 1);
+        }
     }
 }

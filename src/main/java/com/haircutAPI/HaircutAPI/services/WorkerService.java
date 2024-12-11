@@ -56,24 +56,28 @@ public class WorkerService {
         HashSet<String> role = new HashSet<>();
         role.add(UserType.WORKER.name());
         user.setRoles(role);
+
+        user.setId(servicesUtils.idGenerator("WOR", "worker"));
+
         userRepository.save(user);
         Worker worker = workerMapper.toWorker(request);
-        System.out.println(worker.getIdRole());
 
         worker.setPassword(passwordEncoder.encode(request.getPassword()));
         worker.setId(user.getId());
+        workerRepository.save(worker);
 
-        return workerMapper.toWorkerResponse(workerRepository.save(worker));
+        return servicesUtils.addLocationEntity(worker);
     }
 
     @PreAuthorize("hasAuthority('SCOPE_ADMIN')")
     public List<WorkerResponse> getAllWorkers(String name) {
-        return workerMapper.toWorkerResponses(workerRepository.filterByNameWorker(name, workerRepository.findAll()));
+        return servicesUtils
+                .addAllLocationEntity(workerRepository.filterByNameWorker(name, workerRepository.findAll()));
     }
 
     @PostAuthorize("returnObject.username == authentication.name or hasAuthority('SCOPE_ADMIN')")
     public WorkerResponse getWorkerbyID(String idWorker) {
-        return workerMapper.toWorkerResponse(
+        return servicesUtils.addLocationEntity(
                 workerRepository.findById(idWorker).orElseThrow(() -> new AppException(ErrorCode.ID_NOT_FOUND)));
     }
 
@@ -86,7 +90,7 @@ public class WorkerService {
         Worker worker = workerRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.ID_NOT_FOUND));
         workerMapper.updateWorker(worker, rq);
 
-        return workerMapper.toWorkerResponse(workerRepository.save(worker));
+        return servicesUtils.addLocationEntity(workerRepository.save(worker));
     }
 
     @PreAuthorize("hasAuthority('SCOPE_ADMIN')")
@@ -117,7 +121,7 @@ public class WorkerService {
             }
         }
         List<Worker> listWorkerBeforeSearch = workerRepository.findAllByIdLocation(idLocation);
-        return workerMapper.toWorkerResponses(workerRepository.filterByNameWorker(name, listWorkerBeforeSearch));
+        return servicesUtils.addAllLocationEntity(workerRepository.filterByNameWorker(name, listWorkerBeforeSearch));
     }
 
     private boolean checkWorkerCreationRq(WorkerCreationRequest rq) {

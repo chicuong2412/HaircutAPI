@@ -16,6 +16,7 @@ import com.haircutAPI.HaircutAPI.enity.Product;
 import com.haircutAPI.HaircutAPI.exception.DefinedException.AppException;
 import com.haircutAPI.HaircutAPI.mapper.ProductMapper;
 import com.haircutAPI.HaircutAPI.repositories.ProductRepository;
+import com.haircutAPI.HaircutAPI.utils.ServicesUtils;
 
 @Service
 public class ProductService {
@@ -24,10 +25,14 @@ public class ProductService {
     ProductRepository productRepository;
     @Autowired
     ProductMapper productMapper;
+    @Autowired
+    ServicesUtils servicesUtils;
 
     @PreAuthorize("hasAuthority('SCOPE_ADMIN')")
     public APIresponse<ProductResponse> createProduct(ProductCreationRequest rq) {
         Product product = productMapper.toProduct(rq);
+
+        product.setId(servicesUtils.idGenerator("PO", "product"));
 
         productRepository.save(product);
 

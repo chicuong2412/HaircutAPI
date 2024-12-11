@@ -16,6 +16,7 @@ import com.haircutAPI.HaircutAPI.enity.ComboEntity;
 import com.haircutAPI.HaircutAPI.exception.DefinedException.AppException;
 import com.haircutAPI.HaircutAPI.mapper.ComboMapper;
 import com.haircutAPI.HaircutAPI.repositories.ComboRepository;
+import com.haircutAPI.HaircutAPI.utils.ServicesUtils;
 
 @Service
 public class ComboService {
@@ -23,6 +24,8 @@ public class ComboService {
     ComboRepository comboRepository;
     @Autowired
     ComboMapper comboEntityMapper;
+    @Autowired
+    ServicesUtils servicesUtils;
 
     @PreAuthorize("hasAuthority('SCOPE_ADMIN')")
     public APIresponse<ComboResponse> createCombo(ComboCreationRequest rq) {
@@ -30,7 +33,7 @@ public class ComboService {
         rp.setMessage(SuccessCode.CREATE_SUCCESSFUL.getMessage());
 
         ComboEntity comboEntity = comboEntityMapper.toComboEntity(rq);
-
+        comboEntity.setId(servicesUtils.idGenerator("CO", "combo"));
         comboRepository.save(comboEntity);
 
         rp.setResult(comboEntityMapper.toComboResponse(comboEntity));

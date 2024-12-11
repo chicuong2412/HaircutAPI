@@ -21,7 +21,6 @@ public class ServiceEntity {
 
 
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "idService")
     String id;
 

@@ -24,6 +24,7 @@ import com.haircutAPI.HaircutAPI.exception.DefinedException.AppException;
 import com.haircutAPI.HaircutAPI.mapper.CustomerMapper;
 import com.haircutAPI.HaircutAPI.repositories.CustomerRepository;
 import com.haircutAPI.HaircutAPI.repositories.UserRepository;
+import com.haircutAPI.HaircutAPI.utils.ServicesUtils;
 
 @Service
 public class CustomerService {
@@ -33,6 +34,8 @@ public class CustomerService {
     CustomerMapper customerMapper;
     @Autowired
     UserRepository userRepository;
+    @Autowired
+    ServicesUtils servicesUtils;
 
     public CustomerResponse createCustomer(CustomerCreationRequest rq) {
         if (customerRepository.existsByUsername(rq.getUsername()))
@@ -46,6 +49,9 @@ public class CustomerService {
         HashSet<String> role = new HashSet<>();
         role.add(UserType.CUSTOMER.name());
         user.setRoles(role);
+
+        user.setId(servicesUtils.idGenerator("CUS", "customer"));
+
         userRepository.save(user);
         Customer customer = new Customer();
         customer = customerMapper.toCustomer(rq);

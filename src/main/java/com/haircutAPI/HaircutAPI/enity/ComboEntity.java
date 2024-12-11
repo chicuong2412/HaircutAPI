@@ -16,7 +16,6 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class ComboEntity {
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "idCombo")
     String id;
 

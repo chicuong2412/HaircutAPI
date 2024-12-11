@@ -24,7 +24,7 @@ public interface WorkerRepository extends JpaRepository<Worker, String> {
     default List<Worker> filterByNameWorker(String name, List<Worker> listWorkers) {
         List<Worker> workers = new ArrayList<>();
         for (Worker worker: listWorkers) {
-            if (worker.getNameWorker().indexOf(name) != -1) {
+            if (!worker.getUsername().equals("admin") && worker.getNameWorker().indexOf(name) != -1) {
                 workers.add(worker);
             }
         }

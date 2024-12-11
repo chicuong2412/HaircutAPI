@@ -16,6 +16,7 @@ import com.haircutAPI.HaircutAPI.enity.Location;
 import com.haircutAPI.HaircutAPI.exception.DefinedException.AppException;
 import com.haircutAPI.HaircutAPI.mapper.LocationMapper;
 import com.haircutAPI.HaircutAPI.repositories.LocationRepository;
+import com.haircutAPI.HaircutAPI.utils.ServicesUtils;
 
 @Service
 public class LocationService {
@@ -26,15 +27,18 @@ public class LocationService {
     @Autowired
     LocationMapper locationMapper;
 
+    @Autowired
+    ServicesUtils servicesUtils;
+
     @PreAuthorize("hasAuthority('SCOPE_ADMIN')")
     public APIresponse<LocationResponse> createLocation(LocationCreationRequest rq) {
         APIresponse<LocationResponse> rp = new APIresponse<>(SuccessCode.CREATE_SUCCESSFUL.getCode());
         rp.setMessage(SuccessCode.CREATE_SUCCESSFUL.getMessage());
 
         Location location = locationMapper.toLocation(rq);
-
+        location.setId(servicesUtils.idGenerator("LO", "location"));
         locationRepository.save(location);
-
+        
         rp.setResult(locationMapper.toLocationResponse(location));
 
         return rp;
