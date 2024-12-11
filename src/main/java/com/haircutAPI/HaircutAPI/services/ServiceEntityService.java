@@ -43,7 +43,7 @@ public class ServiceEntityService {
 
         serviceEntity.setProductsList(new HashSet<>(products));
 
-        serviceEntity.setId(servicesUtils.idGenerator("S", "service"));
+        serviceEntity.setId(servicesUtils.idGenerator("SE", "service"));
 
         serviceRepository.save(serviceEntity);
 
