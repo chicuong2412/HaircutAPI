@@ -82,7 +82,7 @@ public class ServicesUtils {
         return list;
     }
 
-    public WorkerResponse addLocationEntity(Worker worker) {
+    public WorkerResponse addLocationEntity(Worker worker) { // map to location entity
         WorkerResponse rp = workerMapper.toWorkerResponse(worker);
         rp.setLocation(findLocationByID(worker.getIdLocation()));
 

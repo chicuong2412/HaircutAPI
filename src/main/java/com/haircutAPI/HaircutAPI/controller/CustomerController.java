@@ -40,11 +40,10 @@ public class CustomerController {
     }
 
     @GetMapping
-    APIresponse<List<CustomerResponse>> getCustomers(@RequestParam ("name") String name) {
-        
+    APIresponse<List<CustomerResponse>> getCustomers() {
         APIresponse<List<CustomerResponse>> reponse = new APIresponse<>(SuccessCode.GET_DATA_SUCCESSFUL.getCode());
         reponse.setMessage(SuccessCode.GET_DATA_SUCCESSFUL.getMessage());
-        reponse.setResult(customerService.getAllCustomers(name));
+        reponse.setResult(customerService.getAllCustomers(""));
         return reponse;
     }
 
@@ -69,7 +68,7 @@ public class CustomerController {
         return reponse;
     }
 
-    @DeleteMapping("/{customerID}")
+    @DeleteMapping("/delete/{customerID}")
     APIresponse<String> deleteCustomer(@PathVariable String customerID) {
         customerService.deleteCustomer(customerID);
         APIresponse<String> response = new APIresponse<>(SuccessCode.DELETE_SUCCESSFUL.getCode());

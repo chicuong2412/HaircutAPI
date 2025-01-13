@@ -19,6 +19,10 @@ public interface WorkerRepository extends JpaRepository<Worker, String> {
 
     Worker findByUsername(String username);
 
+    List<Worker> findByIsDeletedFalse();
+
+    List<Worker> findByIdLocationAndIsDeletedFalse(String idLocation);
+
     List<Worker> findAllByIdLocation(String idLocation);
 
     default List<Worker> filterByNameWorker(String name, List<Worker> listWorkers) {

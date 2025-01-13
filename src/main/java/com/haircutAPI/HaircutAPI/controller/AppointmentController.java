@@ -31,7 +31,7 @@ public class AppointmentController {
     AppointmentService appointmentService;
 
     @PostMapping("/create")
-    APIresponse<AppointmentResponse> postMethodName(@RequestBody @Valid AppointmentCreationRequest rq) {
+    APIresponse<AppointmentResponse> createAppointment(@RequestBody @Valid AppointmentCreationRequest rq) {
         return appointmentService.createAppointment(rq, SecurityContextHolder.getContext().getAuthentication());
     }
 
@@ -57,13 +57,13 @@ public class AppointmentController {
         return appointmentService.deleteAppointment(appointmentID);
     }
 
-    @GetMapping("/getByUsername/{username}")
-    public APIresponse<List<AppointmentResponse>> getByUsername(@PathVariable String username) {
+    @GetMapping("/getByCustomerUsername/{username}")
+    public APIresponse<List<AppointmentResponse>> getByCustomerUsername(@PathVariable String username) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         return appointmentService.getAppointmentByCustomerUsername(username, authentication.getName());
     }
 
-    @GetMapping("/getByIdWorker/{id}")
+    @GetMapping("/getAppointmentByIdWorker/{id}")
     public APIresponse<List<AppointmentResponse>> getAppointmetsByIdWorker(@PathVariable String id) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         return appointmentService.getAppointmentByIdWorker(authentication, id);

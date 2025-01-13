@@ -37,7 +37,9 @@ public class Appointment {
     String idLocation;
 
     LocalDateTime dateTime;
-    
 
+    @Column(columnDefinition = "boolean default false")
+    boolean isDeleted;
+    
 
 }

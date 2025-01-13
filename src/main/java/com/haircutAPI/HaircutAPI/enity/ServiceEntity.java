@@ -33,4 +33,7 @@ public class ServiceEntity {
 
     @ManyToMany
     Set<Product> productsList;
+
+    @Column(columnDefinition = "boolean default false")
+    boolean isDeleted;
 }

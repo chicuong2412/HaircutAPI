@@ -177,10 +177,9 @@ public class AppointmentService {
     public APIresponse<String> deleteAppointment(String id) {
         if (!appointmentRepository.existsById(id))
             throw new AppException(ErrorCode.DATA_INPUT_INVALID);
-
-        appointmentRepository.deleteById(id);
-        appointmentDetailsRepository.deleteById(id);
-
+        var appointment = appointmentRepository.findById(id).orElse(null);
+        appointment.setDeleted(true);
+        appointmentRepository.save(appointment);
         APIresponse<String> apIresponse = new APIresponse<>(SuccessCode.DELETE_SUCCESSFUL.getCode());
         apIresponse.setMessage(SuccessCode.DELETE_SUCCESSFUL.getMessage());
         return apIresponse;
@@ -269,6 +268,7 @@ public class AppointmentService {
         if (rq.getDateTime().isBefore(LocalDateTime.now()))
             return false;
 
+            
         if (AppointmentStatus.WAITING.compareTo(rq.getStatus()) != 0)
             return false;
 

@@ -8,12 +8,9 @@ import lombok.experimental.FieldDefaults;
 @Getter
 @Setter
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class AuthenticationResponse {
-
-    boolean authenticated;
-    String token;
-
-    String role;
+public class WorkerInfoPublicResponse {
     String id;
-    
+    String nameWorker;
+    String specialities;
+    double Rate;
 }

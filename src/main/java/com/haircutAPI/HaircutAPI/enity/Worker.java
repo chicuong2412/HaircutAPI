@@ -2,9 +2,9 @@ package com.haircutAPI.HaircutAPI.enity;
 
 import java.time.LocalDate;
 
-
 import com.haircutAPI.HaircutAPI.ENUM.RoleEmployee;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -39,6 +39,7 @@ public class Worker {
     RoleEmployee idRole;
     LocalDate startDate;
 
-    
+    @Column(columnDefinition = "boolean default false")
+    boolean isDeleted;
 
 }

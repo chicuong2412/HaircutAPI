@@ -63,14 +63,13 @@ public class ProductService {
     public APIresponse<ProductResponse> getProduct(String idProduct) {
         Product product = productRepository.findById(idProduct)
                 .orElseThrow(() -> new AppException(ErrorCode.ID_NOT_FOUND));
-
-        productRepository.save(product);
-
         APIresponse<ProductResponse> rp = new APIresponse<>(SuccessCode.UPDATE_DATA_SUCCESSFUL.getCode());
 
         rp.setMessage(SuccessCode.UPDATE_DATA_SUCCESSFUL.getMessage());
 
         rp.setResult(productMapper.toProductResponse(product));
+
+        rp.getResult().setDeleted(product.isDeleted());
 
         return rp;
     }
@@ -89,7 +88,9 @@ public class ProductService {
     public void deleteProduct(String idProduct) {
         if (!productRepository.existsById(idProduct))
             throw new AppException(ErrorCode.ID_NOT_FOUND);
-        productRepository.deleteById(idProduct);
+        var product = productRepository.findById(idProduct).orElse(null);
+        product.setDeleted(true);
+        productRepository.save(product);
     }
 
 }

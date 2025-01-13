@@ -24,11 +24,11 @@ public class SecurityConfig {
 
     private final String[] PublicEndpoints = { "/workers", "/customers", "/auth/workers/login", "/auth/introspect",
             "/auth/customers/login" };
-    private final String[] publicGetEndpoints = { "/location/getLocations", "/location/getLocation/**",
-            "/service/getServiceByID/**",
-            "/service/getAllServices",
-            "/product/getProductByID/**", "/product/getProducts", "/combo/getComboByID/**", "/combo/getAllCombos",
-            "/combo/getComboByID/**" };
+    private final String[] publicGetEndpoints = { "/locations/getLocations", "/locations/getLocation/**",
+            "/services/getServiceByID/**",
+            "/services/getAllServices", "/services/getAllPublicServices" ,
+            "/products/getProductByID/**", "/products/getProducts", "/combos/getComboByID/**", "/combos/getAllCombos",
+            "/combos/getComboByID/**" };
     @Value("${jwt.SIGNED_KEY}")
     protected String SIGNED_KEY;
 

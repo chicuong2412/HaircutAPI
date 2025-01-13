@@ -27,4 +27,7 @@ public class Product {
     double price;
     double rate;
 
+    @Column(columnDefinition = "boolean default false")
+    boolean isDeleted;
+
 }

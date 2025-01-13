@@ -4,8 +4,6 @@ import com.haircutAPI.HaircutAPI.ENUM.CustomerTypes;
 
 import java.time.LocalDate;
 
-import org.springframework.format.annotation.DateTimeFormat;
-
 import jakarta.validation.constraints.Size;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -27,35 +25,24 @@ public class CustomerCreationRequest {
     @NotNull(message = "NOTNULL")
     String password;
 
-    @NotNull(message = "NOTNULL")
     String nameCustomer;
     
-    @NotNull(message = "NOTNULL")
     double loyaltyPoint;
 
-    @NotNull(message = "NOTNULL")
-    @DateTimeFormat(pattern = "dd-MM-yyyy")
     LocalDate DoB;
 
     @Email(message = "EMAIL_INVALID")
     @NotNull(message = "NOTNULL")
     String email;
 
-    @NotNull(message = "NOTNULL")
     String address;
 
-    @NotNull(message = "NOTNULL")
     String phoneNumber;
 
-    @NotNull(message = "NOTNULL")
-    @DateTimeFormat(pattern = "dd-MM-yyyy")
-    LocalDate startDate;
+    // LocalDate startDate;
 
-    @NotNull(message = "NOTNULL")
-    @DateTimeFormat(pattern = "dd-MM-yyyy")
-    LocalDate lastDayUsing;
+    // LocalDate lastDayUsing;
 
-    @NotNull(message = "NOTNULL")
     CustomerTypes typeCustomer;
 
 }

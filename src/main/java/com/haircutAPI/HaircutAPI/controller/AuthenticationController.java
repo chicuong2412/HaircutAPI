@@ -37,7 +37,7 @@ public class AuthenticationController {
     }
 
     @PostMapping("/introspect")
-    APIresponse<IntrospectResponse> postMethodName(@RequestBody IntrospectRequest rq) {
+    APIresponse<IntrospectResponse> introspect(@RequestBody IntrospectRequest rq) {
         var rp = new APIresponse<IntrospectResponse>(202);
         try {
             rp.setResult(authenticationService.introspect(rq));
@@ -50,8 +50,4 @@ public class AuthenticationController {
         }
         return rp;
     }
-    
-
-    
-
 }

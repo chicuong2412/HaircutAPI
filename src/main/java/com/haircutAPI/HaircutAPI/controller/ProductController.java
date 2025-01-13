@@ -22,35 +22,35 @@ import com.haircutAPI.HaircutAPI.services.ProductService;
 import jakarta.validation.Valid;
 
 @RestController
-@RequestMapping("/product")
+@RequestMapping("/products")
 public class ProductController {
 
     @Autowired
     ProductService productService;
 
     @PostMapping("/create")
-    public APIresponse<ProductResponse> createService(@RequestBody @Valid ProductCreationRequest rq) {
+    public APIresponse<ProductResponse> createProduct(@RequestBody @Valid ProductCreationRequest rq) {
         return productService.createProduct(rq);
     }
 
     @PutMapping("/update/{id}")
-    public APIresponse<ProductResponse> updateService(@PathVariable String id, @RequestBody @Valid ProductUpdatioRequest rq) {
+    public APIresponse<ProductResponse> updateProduct(@PathVariable String id, @RequestBody @Valid ProductUpdatioRequest rq) {
         return productService.updateProduct(rq, id);
     }
 
 
     @GetMapping("/getProductByID/{id}")
-    public APIresponse<ProductResponse> getService(@PathVariable String id) {
+    public APIresponse<ProductResponse> getProduct(@PathVariable String id) {
         return productService.getProduct(id);
     }
 
     @GetMapping("/getProducts")
-    public APIresponse<List<ProductResponse>> getAllServices() {
+    public APIresponse<List<ProductResponse>> getAllProducts() {
         return productService.getProducts();
     }
     
-    @DeleteMapping("/{idProduct}")
-    APIresponse<String> deleteCustomer(@PathVariable String idProduct) {
+    @DeleteMapping("/delete/{idProduct}")
+    APIresponse<String> deleteProduct(@PathVariable String idProduct) {
         productService.deleteProduct(idProduct);
         APIresponse<String> response = new APIresponse<>(SuccessCode.DELETE_SUCCESSFUL.getCode());
         response.setMessage(SuccessCode.DELETE_SUCCESSFUL.getMessage());

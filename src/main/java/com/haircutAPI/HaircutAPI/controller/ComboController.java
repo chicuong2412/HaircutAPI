@@ -22,7 +22,7 @@ import com.haircutAPI.HaircutAPI.services.ComboService;
 import jakarta.validation.Valid;
 
 @RestController
-@RequestMapping("/combo")
+@RequestMapping("/combos")
 public class ComboController {
     @Autowired
     ComboService comboEntityService;
@@ -47,8 +47,13 @@ public class ComboController {
     public APIresponse<List<ComboResponse>> getAllCombos() {
         return comboEntityService.getAllComboEntity();
     }
+
+    @GetMapping("/getAllPublicCombos")
+    public APIresponse<List<ComboResponse>> getAllPublicCombos() {
+        return comboEntityService.getAllPublicComboEntity();
+    }
     
-    @DeleteMapping("/{idCombo}")
+    @DeleteMapping("/delete/{idCombo}")
     APIresponse<String> deleteCombo(@PathVariable String idCombo) {
         comboEntityService.deleteCombo(idCombo);
         APIresponse<String> response = new APIresponse<>(SuccessCode.DELETE_SUCCESSFUL.getCode());

@@ -38,7 +38,7 @@ public class LocationService {
         Location location = locationMapper.toLocation(rq);
         location.setId(servicesUtils.idGenerator("LO", "location"));
         locationRepository.save(location);
-        
+
         rp.setResult(locationMapper.toLocationResponse(location));
 
         return rp;
@@ -83,6 +83,16 @@ public class LocationService {
         return rp;
     }
 
+    public APIresponse<List<LocationResponse>> getPublicLocations() {
+
+        APIresponse<List<LocationResponse>> rp = new APIresponse<>(SuccessCode.GET_DATA_SUCCESSFUL.getCode());
+        rp.setMessage(SuccessCode.GET_DATA_SUCCESSFUL.getMessage());
+
+        rp.setResult(locationMapper.toLocationResponses(locationRepository.findByIsDeletedFalse()));
+
+        return rp;
+    }
+
     @PreAuthorize("hasAuthority('SCOPE_ADMIN')")
     public APIresponse<String> deleteLocation(String idLocation) {
 
@@ -93,7 +103,11 @@ public class LocationService {
 
         rp.setMessage(SuccessCode.DELETE_SUCCESSFUL.getMessage());
 
-        locationRepository.deleteById(idLocation);
+        var location = locationRepository.findById(idLocation).orElse(null);
+
+        location.setDeleted(true);
+
+        locationRepository.save(location);
 
         return rp;
     }

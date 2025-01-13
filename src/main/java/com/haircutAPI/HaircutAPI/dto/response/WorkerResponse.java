@@ -2,6 +2,7 @@ package com.haircutAPI.HaircutAPI.dto.response;
 
 import java.time.LocalDate;
 
+import com.haircutAPI.HaircutAPI.ENUM.RoleEmployee;
 import com.haircutAPI.HaircutAPI.enity.Location;
 
 import lombok.AccessLevel;
@@ -25,5 +26,7 @@ public class WorkerResponse {
     String address;
     String phoneNumber;
     Location location;
+    boolean deleted;
+    RoleEmployee idRole;
 
 }

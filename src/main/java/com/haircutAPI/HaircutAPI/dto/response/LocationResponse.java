@@ -33,5 +33,7 @@ public class LocationResponse {
     String email;
 
     LocalTime openHour;
+
+    boolean deleted;
     
 }

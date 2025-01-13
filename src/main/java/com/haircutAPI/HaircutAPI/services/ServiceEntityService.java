@@ -61,6 +61,8 @@ public class ServiceEntityService {
 
         var products = productRepository.findAllById(rq.getProductsList());
 
+        System.out.println(rq.getProductsList());
+
         serviceEntityMapper.updateServiceEntity(serviceEntity, rq);
 
         serviceEntity.setProductsList(new HashSet<>(products));
@@ -96,12 +98,23 @@ public class ServiceEntityService {
         return rp;
     }
 
+    public APIresponse<List<ServiceResponse>> getAllPublicServiceEntity() {
+        List<ServiceEntity> serviceEntities = serviceRepository.findByIsDeletedFalse();
+
+        APIresponse<List<ServiceResponse>> rp = new APIresponse<>(SuccessCode.GET_DATA_SUCCESSFUL.getCode());
+        rp.setMessage(SuccessCode.GET_DATA_SUCCESSFUL.getMessage());
+        rp.setResult(serviceEntityMapper.toServiceResponses(serviceEntities));
+
+        return rp;
+    }
+
     @PreAuthorize("hasAuthority('SCOPE_ADMIN')")
     public void deleteServiceEntity(String idService) {
 
         if (!serviceRepository.existsById(idService))
             throw new AppException(ErrorCode.ID_NOT_FOUND);
-
-        serviceRepository.deleteById(idService);
+        var service = serviceRepository.findById(idService).orElse(null);
+        service.setDeleted(true);
+        serviceRepository.save(service);
     }
 }

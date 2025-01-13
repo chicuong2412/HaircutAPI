@@ -25,4 +25,7 @@ public class ComboEntity {
     long duration;
     double rate;
     double price;
+
+    @Column(columnDefinition = "boolean default false")
+    boolean isDeleted;
 }

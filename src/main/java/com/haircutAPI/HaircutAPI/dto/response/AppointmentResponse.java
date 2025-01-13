@@ -39,4 +39,5 @@ public class AppointmentResponse {
     Set<ComboEntity> idCombo;
 
     double price;
+    boolean deleted;
 }

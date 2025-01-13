@@ -29,4 +29,5 @@ public class ServiceResponse {
     double rate;
     double price;
     Set<Product> productsList;
+    boolean deleted;
 }

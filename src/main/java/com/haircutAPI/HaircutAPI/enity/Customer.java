@@ -6,6 +6,7 @@ import java.time.LocalDate;
 
 import org.springframework.format.annotation.DateTimeFormat;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -39,5 +40,8 @@ public class Customer {
 
     @Enumerated(EnumType.ORDINAL)
     CustomerTypes typeCustomer;
+
+    @Column(columnDefinition = "boolean default false")
+    boolean isDeleted;
 
 }

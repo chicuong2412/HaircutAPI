@@ -80,10 +80,22 @@ public class ComboService {
         return rp;
     }
 
+    public APIresponse<List<ComboResponse>> getAllPublicComboEntity() {
+        List<ComboEntity> comboEntities = comboRepository.findByIsDeletedFalse();
+
+        APIresponse<List<ComboResponse>> rp = new APIresponse<>(SuccessCode.GET_DATA_SUCCESSFUL.getCode());
+        rp.setMessage(SuccessCode.GET_DATA_SUCCESSFUL.getMessage());
+        rp.setResult(comboEntityMapper.toComboResponses(comboEntities));
+
+        return rp;
+    }
+
     @PreAuthorize("hasAuthority('SCOPE_ADMIN')")
     public void deleteCombo(String idCombo) {
         if (!comboRepository.existsById(idCombo))
             throw new AppException(ErrorCode.ID_NOT_FOUND);
-        comboRepository.deleteById(idCombo);
+        var combo = comboRepository.findById(idCombo).orElse(null);
+        combo.setDeleted(true);
+        comboRepository.save(combo);
     }
 }

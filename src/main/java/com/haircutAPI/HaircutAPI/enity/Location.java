@@ -34,5 +34,8 @@ public class Location {
     String email;
 
     LocalTime openHour;
+
+    @Column(columnDefinition = "boolean default false")
+    boolean isDeleted;
     
 }

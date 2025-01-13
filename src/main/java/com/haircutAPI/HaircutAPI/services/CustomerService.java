@@ -1,5 +1,6 @@
 package com.haircutAPI.HaircutAPI.services;
 
+import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.List;
 
@@ -11,6 +12,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.haircutAPI.HaircutAPI.ENUM.CustomerTypes;
 import com.haircutAPI.HaircutAPI.ENUM.ErrorCode;
 import com.haircutAPI.HaircutAPI.ENUM.SuccessCode;
 import com.haircutAPI.HaircutAPI.ENUM.UserType;
@@ -58,6 +60,14 @@ public class CustomerService {
 
         customer.setPassword(passwordEncoder.encode(rq.getPassword()));
         customer.setId(user.getId());
+        customer.setLoyaltyPoint(0);
+        customer.setTypeCustomer(CustomerTypes.None);
+        customer.setAddress("");
+        LocalDate date = LocalDate.now();
+        customer.setStartDate(date);
+        customer.setLastDayUsing(date);
+        customer.setDoB(date);
+        customer.setPhoneNumber("");
 
         return customerMapper.toCustomerResponse(customerRepository.save(customer));
     }
@@ -82,6 +92,12 @@ public class CustomerService {
         Customer customer = customerRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.ID_NOT_FOUND));
         customerMapper.updateCutomer(customer, rq);
 
+        PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
+
+        customer.setPassword(passwordEncoder.encode(rq.getPassword()));
+
+        userRepository.findById(id).orElseThrow().setPassword(passwordEncoder.encode(rq.getPassword()));
+
         return customerMapper.toCustomerResponse(customerRepository.save(customer));
     }
 
@@ -89,7 +105,10 @@ public class CustomerService {
     public void deleteCustomer(String id) {
         if (!customerRepository.existsById(id))
             throw new AppException(ErrorCode.ID_NOT_FOUND);
-        customerRepository.deleteById(id);
+
+        var customer = customerRepository.findById(id).orElse(null);
+        customer.setDeleted(true);
+        customerRepository.save(customer);
     }
 
     public APIresponse<CustomerResponse> getMyInfo(Authentication authen) {

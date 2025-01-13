@@ -19,6 +19,7 @@ import com.haircutAPI.HaircutAPI.ENUM.ErrorCode;
 import com.haircutAPI.HaircutAPI.ENUM.UserType;
 import com.haircutAPI.HaircutAPI.dto.request.WorkerRequest.WorkerCreationRequest;
 import com.haircutAPI.HaircutAPI.dto.request.WorkerRequest.WorkerUpdateRequest;
+import com.haircutAPI.HaircutAPI.dto.response.WorkerInfoPublicResponse;
 import com.haircutAPI.HaircutAPI.dto.response.WorkerResponse;
 import com.haircutAPI.HaircutAPI.enity.User;
 import com.haircutAPI.HaircutAPI.enity.Worker;
@@ -69,10 +70,24 @@ public class WorkerService {
         return servicesUtils.addLocationEntity(worker);
     }
 
-    @PreAuthorize("hasAuthority('SCOPE_ADMIN')")
-    public List<WorkerResponse> getAllWorkers(String name) {
+    @SuppressWarnings("unchecked")
+    @PreAuthorize("hasAuthority('SCOPE_ADMIN') or hasAuthority('SCOPE_MANAGER')")
+    public List<WorkerResponse> getAllWorkers(String name, Authentication authentication) {
+
+        if (!servicesUtils.checkAuthoritesHasRole((Collection<GrantedAuthority>) authentication.getAuthorities(),
+                "SCOPE_ADMIN")) {
+            Worker workerManager = servicesUtils.findWorkerByUsername(authentication.getName());
+            List<Worker> listWorkerBeforeSearch = workerRepository.findAllByIdLocation(workerManager.getIdLocation());
+            return servicesUtils
+                    .addAllLocationEntity(workerRepository.filterByNameWorker(name, listWorkerBeforeSearch));
+        }
+
         return servicesUtils
                 .addAllLocationEntity(workerRepository.filterByNameWorker(name, workerRepository.findAll()));
+    }
+
+    public List<WorkerInfoPublicResponse> getPublicWorkersByIdLocation(String idLocation) {
+        return workerMapper.toWorkerPublicResponses(workerRepository.findByIdLocationAndIsDeletedFalse(idLocation));
     }
 
     @PostAuthorize("returnObject.username == authentication.name or hasAuthority('SCOPE_ADMIN')")
@@ -90,6 +105,11 @@ public class WorkerService {
         Worker worker = workerRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.ID_NOT_FOUND));
         workerMapper.updateWorker(worker, rq);
 
+        PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
+        worker.setPassword(passwordEncoder.encode(rq.getPassword()));
+
+        userRepository.findById(id).orElseThrow().setPassword(passwordEncoder.encode(rq.getPassword()));
+
         return servicesUtils.addLocationEntity(workerRepository.save(worker));
     }
 
@@ -97,7 +117,9 @@ public class WorkerService {
     public void deleteWorker(String id) {
         if (!workerRepository.existsById(id))
             throw new AppException(ErrorCode.ID_NOT_FOUND);
-        workerRepository.deleteById(id);
+        Worker worker = workerRepository.findById(id).orElse(null);
+        worker.setDeleted(true);
+        workerRepository.save(worker);
     }
 
     @PreAuthorize("hasAuthority('SCOPE_ADMIN')")
@@ -123,6 +145,8 @@ public class WorkerService {
         List<Worker> listWorkerBeforeSearch = workerRepository.findAllByIdLocation(idLocation);
         return servicesUtils.addAllLocationEntity(workerRepository.filterByNameWorker(name, listWorkerBeforeSearch));
     }
+
+    
 
     private boolean checkWorkerCreationRq(WorkerCreationRequest rq) {
         if (workerRepository.existsByUsername(rq.getUsername()))

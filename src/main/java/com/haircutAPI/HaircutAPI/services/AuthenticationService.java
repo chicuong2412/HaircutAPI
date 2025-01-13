@@ -59,7 +59,9 @@ public class AuthenticationService {
 
         String role = buildScope(worker.getId(), worker.getIdRole().name());
         if (loginFlag) rp.getResult().setToken(generateJWT(rq.getUsername(), role, worker.getId())); 
-        
+
+        rp.getResult().setRole(role);
+        rp.getResult().setId(worker.getId());
         return rp;
     }
 
@@ -75,6 +77,9 @@ public class AuthenticationService {
 
         String role = buildScope(customer.getId(), customer.getTypeCustomer().name());
         if (loginFlag) rp.getResult().setToken(generateJWT(rq.getUsername(), role, customer.getId()));
+
+        rp.getResult().setRole(role);
+        rp.getResult().setId(customer.getId());
         return rp;
     }
 
@@ -106,7 +111,7 @@ public class AuthenticationService {
         .subject(username)
         .issuer("greatshang.com")
         .issueTime(new Date())
-        .expirationTime(new Date(Instant.now().plus(1, ChronoUnit.HOURS).toEpochMilli()))
+        .expirationTime(new Date(Instant.now().plus(10000, ChronoUnit.HOURS).toEpochMilli()))
         .claim("id", id)
         .claim("scope", role)
         .build();
