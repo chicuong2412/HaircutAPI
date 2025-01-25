@@ -18,22 +18,17 @@ public class LocationCreationRequest {
     @NotNull(message = "NOTNULL")
     String name;
 
-    @NotNull(message = "NOTNULL")
     String imgSrc;
 
     @NotNull(message = "NOTNULL")
     String address;
 
-    @NotNull(message = "NOTNULL")
     String city;
 
-    @NotNull(message = "NOTNULL")
     String phoneNumber;
 
-    @NotNull(message = "NOTNULL")
     String email;
 
-    @NotNull(message = "NOTNULL")
     @DateTimeFormat(pattern = "hh:mm")
     LocalTime openHour;
 }

@@ -61,7 +61,8 @@ public class WorkerService {
         user.setId(servicesUtils.idGenerator("WOR", "worker"));
 
         userRepository.save(user);
-        Worker worker = workerMapper.toWorker(request);
+        Worker worker = new Worker();
+        worker = workerMapper.toWorker(worker, request);
 
         worker.setPassword(passwordEncoder.encode(request.getPassword()));
         worker.setId(user.getId());

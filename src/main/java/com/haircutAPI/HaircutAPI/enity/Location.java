@@ -22,18 +22,18 @@ public class Location {
 
     String name;
 
-    String imgSrc;
+    String imgSrc = "";
 
     @Column(columnDefinition = "TEXT")
-    String address;
+    String address = "";
 
-    String city;
+    String city = "";
 
-    String phoneNumber;
+    String phoneNumber = "";
 
-    String email;
+    String email = "";
 
-    LocalTime openHour;
+    LocalTime openHour = LocalTime.parse("08:30");
 
     @Column(columnDefinition = "boolean default false")
     boolean isDeleted;

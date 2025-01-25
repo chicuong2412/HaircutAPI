@@ -28,12 +28,12 @@ public class ProductController {
     @Autowired
     ProductService productService;
 
-    @PostMapping("/create")
+    @PostMapping("")
     public APIresponse<ProductResponse> createProduct(@RequestBody @Valid ProductCreationRequest rq) {
         return productService.createProduct(rq);
     }
 
-    @PutMapping("/update/{id}")
+    @PutMapping("/{id}")
     public APIresponse<ProductResponse> updateProduct(@PathVariable String id, @RequestBody @Valid ProductUpdatioRequest rq) {
         return productService.updateProduct(rq, id);
     }

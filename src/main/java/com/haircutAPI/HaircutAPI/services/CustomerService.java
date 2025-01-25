@@ -47,7 +47,7 @@ public class CustomerService {
 
         user.setUsername(rq.getUsername());
         user.setPassword(passwordEncoder.encode(rq.getPassword()));
-        
+
         HashSet<String> role = new HashSet<>();
         role.add(UserType.CUSTOMER.name());
         user.setRoles(role);
@@ -56,16 +56,37 @@ public class CustomerService {
 
         userRepository.save(user);
         Customer customer = new Customer();
-        customer = customerMapper.toCustomer(rq);
+        customer = customerMapper.toCustomer(customer, rq);
 
         customer.setPassword(passwordEncoder.encode(rq.getPassword()));
         customer.setId(user.getId());
-        customer.setLoyaltyPoint(0);
-        customer.setTypeCustomer(CustomerTypes.None);
+        return customerMapper.toCustomerResponse(customerRepository.save(customer));
+    }
+
+    public CustomerResponse createCustomerAdmin(CustomerCreationRequest rq) {
+        if (customerRepository.existsByUsername(rq.getUsername()))
+            throw new AppException(ErrorCode.USERNAME_EXISTED);
+        PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
+        User user = new User();
+
+        user.setUsername(rq.getUsername());
+        user.setPassword(passwordEncoder.encode(rq.getPassword()));
+
+        HashSet<String> role = new HashSet<>();
+        role.add(UserType.CUSTOMER.name());
+        user.setRoles(role);
+
+        user.setId(servicesUtils.idGenerator("CUS", "customer"));
+
+        userRepository.save(user);
+        Customer customer = new Customer();
+        customer = customerMapper.toCustomer(customer, rq);
+
+        customer.setPassword(passwordEncoder.encode(rq.getPassword()));
+        customer.setId(user.getId());
         customer.setAddress("");
         LocalDate date = LocalDate.now();
         customer.setStartDate(date);
-        customer.setLastDayUsing(date);
         customer.setDoB(date);
         customer.setPhoneNumber("");
 
@@ -74,7 +95,8 @@ public class CustomerService {
 
     @PreAuthorize("hasAuthority('SCOPE_ADMIN')")
     public List<CustomerResponse> getAllCustomers(String name) {
-        return customerMapper.toCustomerResponses(customerRepository.filterByNameWorker(name, customerRepository.findAll()));
+        return customerMapper
+                .toCustomerResponses(customerRepository.filterByNameWorker(name, customerRepository.findAll()));
     }
 
     @PostAuthorize("returnObject.username == authentication.name or hasAuthority('SCOPE_ADMIN')")
@@ -92,11 +114,11 @@ public class CustomerService {
         Customer customer = customerRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.ID_NOT_FOUND));
         customerMapper.updateCutomer(customer, rq);
 
-        PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
+        // PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
 
-        customer.setPassword(passwordEncoder.encode(rq.getPassword()));
+        // customer.setPassword(passwordEncoder.encode(rq.getPassword()));
 
-        userRepository.findById(id).orElseThrow().setPassword(passwordEncoder.encode(rq.getPassword()));
+        // userRepository.findById(id).orElseThrow().setPassword(passwordEncoder.encode(rq.getPassword()));
 
         return customerMapper.toCustomerResponse(customerRepository.save(customer));
     }

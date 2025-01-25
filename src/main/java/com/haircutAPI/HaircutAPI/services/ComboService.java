@@ -32,7 +32,8 @@ public class ComboService {
         APIresponse<ComboResponse> rp = new APIresponse<>(SuccessCode.CREATE_SUCCESSFUL.getCode());
         rp.setMessage(SuccessCode.CREATE_SUCCESSFUL.getMessage());
 
-        ComboEntity comboEntity = comboEntityMapper.toComboEntity(rq);
+        ComboEntity comboEntity = new ComboEntity();
+        comboEntity = comboEntityMapper.toComboEntity(comboEntity, rq);
         comboEntity.setId(servicesUtils.idGenerator("CO", "combo"));
         comboRepository.save(comboEntity);
 

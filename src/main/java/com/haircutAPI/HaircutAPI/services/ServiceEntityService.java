@@ -39,7 +39,8 @@ public class ServiceEntityService {
 
         var products = productRepository.findAllById(rq.getProductsList());
 
-        ServiceEntity serviceEntity = serviceEntityMapper.toServiceEntity(rq);
+        ServiceEntity serviceEntity = new ServiceEntity();
+        serviceEntity = serviceEntityMapper.toServiceEntity(serviceEntity, rq);
 
         serviceEntity.setProductsList(new HashSet<>(products));
 

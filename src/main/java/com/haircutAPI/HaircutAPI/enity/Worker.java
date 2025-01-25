@@ -25,19 +25,19 @@ public class Worker {
 
     String username;
     String password;
-    String nameWorker;
-    String specialities;
-    double salary;
-    double Rate;
-    LocalDate DoB;
-    String email;
-    String address;
-    String phoneNumber;
+    String nameWorker = "";
+    String specialities = "";
+    double salary = 0;
+    double Rate = 0;
+    LocalDate DoB = LocalDate.now();
+    String email = "";
+    String address = "";
+    String phoneNumber = "";
     String idLocation;
 
     @Enumerated(EnumType.ORDINAL)
-    RoleEmployee idRole;
-    LocalDate startDate;
+    RoleEmployee idRole = RoleEmployee.EMPLOYEE;
+    LocalDate startDate = LocalDate.now();
 
     @Column(columnDefinition = "boolean default false")
     boolean isDeleted;

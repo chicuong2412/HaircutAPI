@@ -23,13 +23,13 @@ public class ServiceEntity {
     String id;
 
     String name;
-    String imgSrc;
+    String imgSrc = "";
 
     @Column(columnDefinition = "TEXT")
-    String description;
-    long duration;
-    double rate;
-    double price;
+    String description = "";
+    long duration = 0;
+    double rate = 0;
+    double price = 0;
 
     @ManyToMany
     Set<Product> productsList;

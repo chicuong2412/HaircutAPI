@@ -30,7 +30,8 @@ public class ProductService {
 
     @PreAuthorize("hasAuthority('SCOPE_ADMIN')")
     public APIresponse<ProductResponse> createProduct(ProductCreationRequest rq) {
-        Product product = productMapper.toProduct(rq);
+        Product product = new Product();
+        product = productMapper.toProduct(product, rq);
 
         product.setId(servicesUtils.idGenerator("PO", "product"));
 

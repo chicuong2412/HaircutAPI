@@ -5,6 +5,7 @@ import java.util.List;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
+import org.mapstruct.NullValuePropertyMappingStrategy;
 
 import com.haircutAPI.HaircutAPI.dto.request.AppointmetRequest.AppointmentCreationRequest;
 import com.haircutAPI.HaircutAPI.dto.request.AppointmetRequest.AppointmentUpdationRequest;
@@ -14,7 +15,7 @@ import com.haircutAPI.HaircutAPI.enity.AppointmentDetails;
 import com.haircutAPI.HaircutAPI.enity.Customer;
 import com.haircutAPI.HaircutAPI.enity.Worker;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
 public interface AppointmentMapper {
 
     Appointment toAppointment(AppointmentCreationRequest rq);

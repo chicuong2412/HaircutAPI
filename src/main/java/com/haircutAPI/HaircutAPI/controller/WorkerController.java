@@ -73,7 +73,7 @@ public class WorkerController {
         return reponse;
     }
 
-    @PutMapping("/update/{workerID}")
+    @PutMapping("/{workerID}")
     APIresponse<WorkerResponse> updateWorkerInfo(@PathVariable String workerID, @RequestBody WorkerUpdateRequest rq) {
         APIresponse<WorkerResponse> reponse = new APIresponse<>(SuccessCode.UPDATE_DATA_SUCCESSFUL.getCode());
         reponse.setMessage(SuccessCode.UPDATE_DATA_SUCCESSFUL.getMessage());

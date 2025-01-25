@@ -30,7 +30,7 @@ public class AppointmentController {
     @Autowired
     AppointmentService appointmentService;
 
-    @PostMapping("/create")
+    @PostMapping("")
     APIresponse<AppointmentResponse> createAppointment(@RequestBody @Valid AppointmentCreationRequest rq) {
         return appointmentService.createAppointment(rq, SecurityContextHolder.getContext().getAuthentication());
     }
@@ -45,7 +45,7 @@ public class AppointmentController {
         return appointmentService.getAppointment(appointmentID, SecurityContextHolder.getContext().getAuthentication());
     }
 
-    @PutMapping("/update")
+    @PutMapping("")
     public APIresponse<AppointmentResponse> updateAppointment(@RequestBody @Valid AppointmentUpdationRequest rq) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 

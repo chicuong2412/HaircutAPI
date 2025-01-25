@@ -24,35 +24,26 @@ public class WorkerCreationRequest {
     @NotNull(message = "NOTNULL")
     String password;
 
-    @NotNull(message = "NOTNULL")
     String nameWorker;
 
-    @NotNull(message = "NOTNULL")
     String specialities;
 
-    @NotNull(message = "NOTNULL")
     double salary;
 
-    @NotNull(message = "NOTNULL")
     double Rate;
 
-    @NotNull(message = "NOTNULL")
     LocalDate DoB;
 
     @Email(message = "EMAIL_INVALID")
-    @NotNull(message = "NOTNULL")
     String email;
 
-    @NotNull(message = "NOTNULL")
     String address;
 
-    @NotNull(message = "NOTNULL")
     String phoneNumber;
 
     @NotNull(message = "NOTNULL")
     String idLocation;
 
-    @NotNull(message = "NOTNULL")
     RoleEmployee idRole;
     
     @NotNull(message = "NOTNULL")

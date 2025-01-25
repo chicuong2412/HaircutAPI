@@ -4,6 +4,7 @@ import com.haircutAPI.HaircutAPI.ENUM.CustomerTypes;
 
 import java.time.LocalDate;
 
+import org.hibernate.annotations.ColumnDefault;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import jakarta.persistence.Column;
@@ -26,20 +27,26 @@ public class Customer {
 
     String username;
     String password;
-    String nameCustomer;
-    double loyaltyPoint;
-    @DateTimeFormat(pattern = "dd-MM-yyyy")
-    LocalDate DoB;
-    String email;
-    String address;
-    String phoneNumber;
-    @DateTimeFormat(pattern = "dd-MM-yyyy")
-    LocalDate startDate;
-    @DateTimeFormat(pattern = "dd-MM-yyyy")
-    LocalDate lastDayUsing;
+    @ColumnDefault(value = "none")
+    String nameCustomer = "";
 
+    @ColumnDefault(value = "0")
+    double loyaltyPoint = 0;
+    @DateTimeFormat(pattern = "dd-MM-yyyy")
+    LocalDate DoB = LocalDate.now();
+    String email;
+    @ColumnDefault(value = "none")
+    String address = "";
+    @ColumnDefault(value = "none")
+    String phoneNumber = "";
+    @DateTimeFormat(pattern = "dd-MM-yyyy")
+    LocalDate startDate = LocalDate.now();
+    @DateTimeFormat(pattern = "dd-MM-yyyy")
+    LocalDate lastDayUsing = LocalDate.now();
+
+    @ColumnDefault(value = "'0'")
     @Enumerated(EnumType.ORDINAL)
-    CustomerTypes typeCustomer;
+    CustomerTypes typeCustomer = CustomerTypes.None;
 
     @Column(columnDefinition = "boolean default false")
     boolean isDeleted;

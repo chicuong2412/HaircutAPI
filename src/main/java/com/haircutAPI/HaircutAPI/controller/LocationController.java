@@ -31,12 +31,12 @@ public class LocationController {
     @Autowired
     LocationService locationService;
 
-    @PostMapping("/create")
+    @PostMapping("")
     public APIresponse<LocationResponse> createLocation(@RequestBody @Valid LocationCreationRequest rq) {
         return locationService.createLocation(rq);
     }
 
-    @PutMapping("/update/{id}")
+    @PutMapping("/{id}")
     public APIresponse<LocationResponse> updateLocation(@PathVariable String id, @RequestBody LocationUpdationRequest rq) {
         return locationService.updateLocation(rq, id);
     }

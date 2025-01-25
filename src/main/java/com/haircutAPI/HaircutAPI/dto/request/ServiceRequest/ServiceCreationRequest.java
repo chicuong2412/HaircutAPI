@@ -22,16 +22,16 @@ public class ServiceCreationRequest {
     @NotNull(message = "NOTNULL")
     String name;
 
-    @NotNull(message = "NOTNULL")
+
     String imgSrc;
 
-    @NotNull(message = "NOTNULL")
+
     String description;
-    @NotNull(message = "NOTNULL")
+
     long duration;
-    @NotNull(message = "NOTNULL")
+
     double rate;
-    @NotNull(message = "NOTNULL")
+
     double price;
     Set<String> productsList;
 }

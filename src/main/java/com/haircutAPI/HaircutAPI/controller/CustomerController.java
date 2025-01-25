@@ -21,7 +21,7 @@ import com.haircutAPI.HaircutAPI.dto.response.CustomerResponse;
 import com.haircutAPI.HaircutAPI.services.CustomerService;
 
 import jakarta.validation.Valid;
-import org.springframework.web.bind.annotation.RequestParam;
+// import org.springframework.web.bind.annotation.RequestParam;
 
 
 @RestController
@@ -60,7 +60,7 @@ public class CustomerController {
         return reponse;
     }
 
-    @PutMapping("/update/{customerID}")
+    @PutMapping("/{customerID}")
     APIresponse<CustomerResponse> updateCustomerInfo(@PathVariable String customerID, @RequestBody @Valid CustomerUpdateRequest rq) {
         APIresponse<CustomerResponse> reponse = new APIresponse<>(SuccessCode.UPDATE_DATA_SUCCESSFUL.getCode());
         reponse.setMessage(SuccessCode.UPDATE_DATA_SUCCESSFUL.getMessage());

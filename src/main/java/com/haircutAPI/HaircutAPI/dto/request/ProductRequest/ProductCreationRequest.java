@@ -14,17 +14,12 @@ public class ProductCreationRequest {
     @NotNull(message = "NOTNULL")
     String name;
 
-    @NotNull(message = "NOTNULL")
     String imgSrc;
 
-    @NotNull(message = "NOTNULL")
     long stockQuantity;
 
-    @NotNull(message = "NOTNULL")
     String description;
-    @NotNull(message = "NOTNULL")
     double price;
-    @NotNull(message = "NOTNULL")
     double rate;
 
 }

@@ -19,13 +19,13 @@ public class Product {
     String id;
 
     String name;
-    long stockQuantity;
-    String imgSrc;
+    long stockQuantity = 0;
+    String imgSrc = "";
 
     @Column(columnDefinition = "TEXT")
-    String description;
-    double price;
-    double rate;
+    String description = "";
+    double price = 0;
+    double rate = 0;
 
     @Column(columnDefinition = "boolean default false")
     boolean isDeleted;

@@ -27,12 +27,12 @@ public class ComboController {
     @Autowired
     ComboService comboEntityService;
 
-    @PostMapping("/create")
+    @PostMapping()
     public APIresponse<ComboResponse> createCombo(@RequestBody @Valid ComboCreationRequest rq) {
         return comboEntityService.createCombo(rq);
     }
 
-    @PutMapping("/update/{id}")
+    @PutMapping("/{id}")
     public APIresponse<ComboResponse> updateCombo(@PathVariable String id, @RequestBody @Valid ComboUpdationRequest rq) {
         return comboEntityService.updateCombo(rq, id);
     }

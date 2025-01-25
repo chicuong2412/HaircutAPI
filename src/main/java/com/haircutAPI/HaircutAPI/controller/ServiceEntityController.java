@@ -32,13 +32,13 @@ public class ServiceEntityController {
     @Autowired
     ServiceEntityService serviceEntityService;
 
-    @PostMapping("/create")
+    @PostMapping("")
     public APIresponse<ServiceResponse> createService(@RequestBody @Valid ServiceCreationRequest rq) {
         System.out.println(rq.getDescription());
         return serviceEntityService.createService(rq);
     }
 
-    @PutMapping("/update/{id}")
+    @PutMapping("/{id}")
     public APIresponse<ServiceResponse> updateService(@PathVariable String id, @RequestBody @Valid ServiceUpdationRequest rq) {
         return serviceEntityService.updateService(rq, id);
     }

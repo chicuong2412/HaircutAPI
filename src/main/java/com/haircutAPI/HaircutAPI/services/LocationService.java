@@ -35,7 +35,8 @@ public class LocationService {
         APIresponse<LocationResponse> rp = new APIresponse<>(SuccessCode.CREATE_SUCCESSFUL.getCode());
         rp.setMessage(SuccessCode.CREATE_SUCCESSFUL.getMessage());
 
-        Location location = locationMapper.toLocation(rq);
+        Location location = new Location();
+        location = locationMapper.toLocation(location, rq);
         location.setId(servicesUtils.idGenerator("LO", "location"));
         locationRepository.save(location);
 

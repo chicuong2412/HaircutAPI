@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingTarget;
+import org.mapstruct.NullValuePropertyMappingStrategy;
 
 import com.haircutAPI.HaircutAPI.dto.request.WorkerRequest.WorkerCreationRequest;
 import com.haircutAPI.HaircutAPI.dto.request.WorkerRequest.WorkerUpdateRequest;
@@ -12,10 +13,10 @@ import com.haircutAPI.HaircutAPI.dto.response.WorkerResponse;
 import com.haircutAPI.HaircutAPI.enity.Worker;
 
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
 public interface WorkerMapper {
 
-    Worker toWorker(WorkerCreationRequest rq);
+    Worker toWorker(@MappingTarget Worker worker, WorkerCreationRequest rq);
 
     void updateWorker(@MappingTarget Worker worker, WorkerUpdateRequest rq);   
     

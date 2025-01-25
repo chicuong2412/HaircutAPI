@@ -16,8 +16,8 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class CustomerUpdateRequest {
 
-    @Size(min = 8, message = "PASSWORD_LENGTH_INVALID")
-    String password;
+    // @Size(min = 8, message = "PASSWORD_LENGTH_INVALID")
+    // String password;
     String nameCustomer;
     double loyaltyPoint;
     LocalDate DoB;
@@ -25,8 +25,8 @@ public class CustomerUpdateRequest {
     String email;
     String address;
     String phoneNumber;
-    LocalDate startDate;
-    LocalDate lastDayUsing;
+    // LocalDate startDate;
+    // LocalDate lastDayUsing;
     CustomerTypes typeCustomer;
     
 }
