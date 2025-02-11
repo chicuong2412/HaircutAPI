@@ -39,7 +39,7 @@ public class WorkerUpdateRequest {
     @NotNull(message = "NOTNULL")
     String phoneNumber;
     @NotNull(message = "NOTNULL")
-    String idLocation;
+    String location;
     @NotNull(message = "NOTNULL")
     RoleEmployee idRole;
     @NotNull(message = "NOTNULL")

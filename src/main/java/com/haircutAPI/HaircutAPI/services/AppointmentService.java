@@ -268,7 +268,6 @@ public class AppointmentService {
         if (rq.getDateTime().isBefore(LocalDateTime.now()))
             return false;
 
-            
         if (AppointmentStatus.WAITING.compareTo(rq.getStatus()) != 0)
             return false;
 
@@ -282,13 +281,14 @@ public class AppointmentService {
             return false;
 
         if (!servicesUtils.findWorkerById(rq.getIdWorker()).getIdLocation().equals(rq.getIdLocation()))
-            return false;
+            throw new AppException(ErrorCode.WORKER_LOCATION_NOT_MATCHED);
 
         return true;
     }
 
     private boolean checkValidInfomationUpdate(AppointmentUpdationRequest rq) {
-        if (rq.getDateTime().isBefore(LocalDateTime.now()))
+
+        if (!rq.getDateTime().isAfter(LocalDateTime.now()))
             return false;
 
         if (!servicesUtils.isCustomerIdExisted(rq.getIdCustomer()))
@@ -301,7 +301,7 @@ public class AppointmentService {
             return false;
 
         if (!servicesUtils.findWorkerById(rq.getIdWorker()).getIdLocation().equals(rq.getIdLocation()))
-            return false;
+            throw new AppException(ErrorCode.WORKER_LOCATION_NOT_MATCHED);
 
         return true;
     }

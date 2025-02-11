@@ -43,6 +43,4 @@ public class AppointmentUpdationRequest {
     @NotNull(message = "NOTNULL")
     Set<String> idCombo;
 
-    @NotNull(message = "NOTNULL")
-    double price;
 }

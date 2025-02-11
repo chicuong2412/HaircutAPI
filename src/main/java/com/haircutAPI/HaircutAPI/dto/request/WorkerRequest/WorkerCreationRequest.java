@@ -42,11 +42,11 @@ public class WorkerCreationRequest {
     String phoneNumber;
 
     @NotNull(message = "NOTNULL")
-    String idLocation;
+    String location;
 
     RoleEmployee idRole;
     
-    @NotNull(message = "NOTNULL")
-    LocalDate startDate;
+    // @NotNull(message = "NOTNULL")
+    // LocalDate startDate;
 
 }

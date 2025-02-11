@@ -80,7 +80,7 @@ public class ProductService {
 
         rp.setMessage(SuccessCode.GET_DATA_SUCCESSFUL.getMessage());
 
-        rp.setResult(productMapper.toProductResponses(productRepository.findAll()));
+        rp.setResult(productMapper.toProductResponses(productRepository.findByIsDeletedFalse()));
 
         return rp;
     }

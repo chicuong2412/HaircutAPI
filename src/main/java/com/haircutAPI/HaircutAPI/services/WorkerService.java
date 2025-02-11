@@ -1,5 +1,6 @@
 package com.haircutAPI.HaircutAPI.services;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -16,11 +17,15 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.haircutAPI.HaircutAPI.ENUM.ErrorCode;
+import com.haircutAPI.HaircutAPI.ENUM.SuccessCode;
 import com.haircutAPI.HaircutAPI.ENUM.UserType;
 import com.haircutAPI.HaircutAPI.dto.request.WorkerRequest.WorkerCreationRequest;
 import com.haircutAPI.HaircutAPI.dto.request.WorkerRequest.WorkerUpdateRequest;
+import com.haircutAPI.HaircutAPI.dto.response.APIresponse;
+import com.haircutAPI.HaircutAPI.dto.response.CustomerResponse;
 import com.haircutAPI.HaircutAPI.dto.response.WorkerInfoPublicResponse;
 import com.haircutAPI.HaircutAPI.dto.response.WorkerResponse;
+import com.haircutAPI.HaircutAPI.enity.Customer;
 import com.haircutAPI.HaircutAPI.enity.User;
 import com.haircutAPI.HaircutAPI.enity.Worker;
 import com.haircutAPI.HaircutAPI.exception.DefinedException.AppException;
@@ -63,7 +68,8 @@ public class WorkerService {
         userRepository.save(user);
         Worker worker = new Worker();
         worker = workerMapper.toWorker(worker, request);
-
+        worker.setIdLocation(request.getLocation());
+        worker.setStartDate(LocalDate.now());
         worker.setPassword(passwordEncoder.encode(request.getPassword()));
         worker.setId(user.getId());
         workerRepository.save(worker);
@@ -104,12 +110,17 @@ public class WorkerService {
             throw new AppException(ErrorCode.ID_NOT_FOUND);
 
         Worker worker = workerRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.ID_NOT_FOUND));
+        String password = worker.getPassword();
         workerMapper.updateWorker(worker, rq);
+        worker.setIdLocation(rq.getLocation());
 
         PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
-        worker.setPassword(passwordEncoder.encode(rq.getPassword()));
-
-        userRepository.findById(id).orElseThrow().setPassword(passwordEncoder.encode(rq.getPassword()));
+        if (rq.getPassword() != null) {
+            worker.setPassword(passwordEncoder.encode(rq.getPassword()));
+            userRepository.findById(id).orElseThrow().setPassword(passwordEncoder.encode(rq.getPassword()));
+        } else {
+            worker.setPassword(password);
+        }
 
         return servicesUtils.addLocationEntity(workerRepository.save(worker));
     }
@@ -147,13 +158,21 @@ public class WorkerService {
         return servicesUtils.addAllLocationEntity(workerRepository.filterByNameWorker(name, listWorkerBeforeSearch));
     }
 
-    
+     public APIresponse<WorkerResponse> getMyInfo(Authentication authen) {
+        APIresponse<WorkerResponse> rp = new APIresponse<>(SuccessCode.GET_DATA_SUCCESSFUL.getCode());
+        System.out.println(authen.getName());
+        Worker worker = workerRepository.findByUsername(authen.getName());
+        rp.setResult(workerMapper.toWorkerResponse(worker));
+        return rp;
+    }
 
     private boolean checkWorkerCreationRq(WorkerCreationRequest rq) {
         if (workerRepository.existsByUsername(rq.getUsername()))
             throw new AppException(ErrorCode.USERNAME_EXISTED);
-        if (!servicesUtils.isLocationIdExisted(rq.getIdLocation()))
+        if (!servicesUtils.isLocationIdExisted(rq.getLocation()))
             throw new AppException(ErrorCode.ID_LOCATION_NOT_FOUND);
         return true;
     }
+
+
 }

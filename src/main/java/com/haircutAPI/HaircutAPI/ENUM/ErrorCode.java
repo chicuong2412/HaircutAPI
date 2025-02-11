@@ -9,6 +9,7 @@ public enum ErrorCode {
     PASSWORD_LENGTH_INVALID(502, "Password must be at least 8 characters"),
     EMAIL_INVALID(503, "This email is not correct!!!"),
     USERNAME_NOT_EXISTED(405, "This username doesn't exist"),
+    WORKER_LOCATION_NOT_MATCHED(410, "You need to choose location matched the worker"),
     LOGIN_FAILED(404, "Password is incorrect"),
     WRONG_TOKEN(406, "This token is expired or does not exist"),
     NOTNULL(407, "The field inputs must not be null"),

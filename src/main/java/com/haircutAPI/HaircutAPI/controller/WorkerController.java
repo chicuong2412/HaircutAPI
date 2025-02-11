@@ -11,6 +11,7 @@ import com.haircutAPI.HaircutAPI.ENUM.SuccessCode;
 import com.haircutAPI.HaircutAPI.dto.request.WorkerRequest.WorkerCreationRequest;
 import com.haircutAPI.HaircutAPI.dto.request.WorkerRequest.WorkerUpdateRequest;
 import com.haircutAPI.HaircutAPI.dto.response.APIresponse;
+import com.haircutAPI.HaircutAPI.dto.response.CustomerResponse;
 import com.haircutAPI.HaircutAPI.dto.response.WorkerInfoPublicResponse;
 import com.haircutAPI.HaircutAPI.dto.response.WorkerResponse;
 import com.haircutAPI.HaircutAPI.services.WorkerService;
@@ -87,5 +88,10 @@ public class WorkerController {
         APIresponse<String> response = new APIresponse<>(SuccessCode.DELETE_SUCCESSFUL.getCode());
         response.setMessage(SuccessCode.DELETE_SUCCESSFUL.getMessage());
         return response;
+    }
+
+    @GetMapping("/getMyInfo")
+    public APIresponse<WorkerResponse> getMyInfo() {
+        return workerService.getMyInfo(SecurityContextHolder.getContext().getAuthentication());
     }
 }
