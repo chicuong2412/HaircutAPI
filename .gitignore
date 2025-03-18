@@ -20,6 +20,7 @@ src/firebase_key.json
 *.iws
 *.iml
 *.ipr
+*.json
 
 ### NetBeans ###
 /nbproject/private/
