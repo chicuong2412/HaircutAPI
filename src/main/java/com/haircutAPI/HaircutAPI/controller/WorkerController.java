@@ -11,6 +11,7 @@ import com.haircutAPI.HaircutAPI.ENUM.SuccessCode;
 import com.haircutAPI.HaircutAPI.dto.request.WorkerRequest.WorkerCreationRequest;
 import com.haircutAPI.HaircutAPI.dto.request.WorkerRequest.WorkerUpdateRequest;
 import com.haircutAPI.HaircutAPI.dto.response.APIresponse;
+import com.haircutAPI.HaircutAPI.dto.response.WorkerInfoPublicResponse;
 import com.haircutAPI.HaircutAPI.dto.response.WorkerResponse;
 import com.haircutAPI.HaircutAPI.services.WorkerService;
 
@@ -40,10 +41,26 @@ public class WorkerController {
     }
 
     @GetMapping("/getAllWorkers")
-    APIresponse<List<WorkerResponse>> getWorkers(@RequestParam ("name") String name) {
+    APIresponse<List<WorkerResponse>> getWorkers() {
         APIresponse<List<WorkerResponse>> reponse = new APIresponse<>(SuccessCode.GET_DATA_SUCCESSFUL.getCode());
         reponse.setMessage(SuccessCode.GET_DATA_SUCCESSFUL.getMessage());
-        reponse.setResult(workerService.getAllWorkers(name));
+        reponse.setResult(workerService.getAllWorkers("", SecurityContextHolder.getContext().getAuthentication()));
+        return reponse;
+    }
+
+    @GetMapping("/getPublicByIdLocation")
+    APIresponse<List<WorkerInfoPublicResponse>> getWorkersByIdLocation(@RequestParam ("idLocation") String idLocation) {
+        APIresponse<List<WorkerInfoPublicResponse>> reponse = new APIresponse<>(SuccessCode.GET_DATA_SUCCESSFUL.getCode());
+        reponse.setMessage(SuccessCode.GET_DATA_SUCCESSFUL.getMessage());
+        reponse.setResult(workerService.getPublicWorkersByIdLocation(idLocation));
+        return reponse;
+    }
+
+    @GetMapping("/getAllPublicWorkers")
+    APIresponse<List<WorkerInfoPublicResponse>> getWorkersPublicAll() {
+        APIresponse<List<WorkerInfoPublicResponse>> reponse = new APIresponse<>(SuccessCode.GET_DATA_SUCCESSFUL.getCode());
+        reponse.setMessage(SuccessCode.GET_DATA_SUCCESSFUL.getMessage());
+        reponse.setResult(workerService.getPublicWorkers());
         return reponse;
     }
 
@@ -64,15 +81,16 @@ public class WorkerController {
         return reponse;
     }
 
-    @PutMapping("/update/{workerID}")
+    @PutMapping("/{workerID}")
     APIresponse<WorkerResponse> updateWorkerInfo(@PathVariable String workerID, @RequestBody WorkerUpdateRequest rq) {
+
         APIresponse<WorkerResponse> reponse = new APIresponse<>(SuccessCode.UPDATE_DATA_SUCCESSFUL.getCode());
         reponse.setMessage(SuccessCode.UPDATE_DATA_SUCCESSFUL.getMessage());
         reponse.setResult(workerService.updateWorker(workerID, rq));
         return reponse;
     }
 
-    @DeleteMapping("/{workerID}")
+    @DeleteMapping("/delete/{workerID}")
     APIresponse<String> deleteWorker(@PathVariable String workerID) {
         workerService.deleteWorker(workerID);
         APIresponse<String> response = new APIresponse<>(SuccessCode.DELETE_SUCCESSFUL.getCode());
@@ -80,6 +98,13 @@ public class WorkerController {
         return response;
     }
 
-    
+    @GetMapping("/getMyInfo")
+    public APIresponse<WorkerResponse> getMyInfo() {
+        return workerService.getMyInfo(SecurityContextHolder.getContext().getAuthentication());
+    }
 
+    @GetMapping("/getMyAvatar")
+    APIresponse<String> getAvatar() {
+        return workerService.getMyAvatarSource(SecurityContextHolder.getContext().getAuthentication());
+    }
 }

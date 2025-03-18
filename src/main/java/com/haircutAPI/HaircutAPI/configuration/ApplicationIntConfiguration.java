@@ -13,6 +13,7 @@ import com.haircutAPI.HaircutAPI.ENUM.RoleEmployee;
 import com.haircutAPI.HaircutAPI.ENUM.UserType;
 import com.haircutAPI.HaircutAPI.enity.User;
 import com.haircutAPI.HaircutAPI.enity.Worker;
+import com.haircutAPI.HaircutAPI.repositories.CustomerRepository;
 import com.haircutAPI.HaircutAPI.repositories.UserRepository;
 import com.haircutAPI.HaircutAPI.repositories.WorkerRepository;
 
@@ -20,7 +21,7 @@ import com.haircutAPI.HaircutAPI.repositories.WorkerRepository;
 public class ApplicationIntConfiguration {
     
     @Bean
-    ApplicationRunner applicationRunner(UserRepository userRepository, WorkerRepository workerRepository) {
+    ApplicationRunner applicationRunner(UserRepository userRepository, WorkerRepository workerRepository, CustomerRepository customerRepository) {
         return args -> {
             if (!userRepository.existsByUsername("admin")) {
                 HashSet<String> roles = new HashSet<>();
@@ -36,7 +37,7 @@ public class ApplicationIntConfiguration {
                 Worker worker = new Worker();
                 worker.setId(user.getId());
                 worker.setUsername(user.getUsername());
-                worker.setPassword(user.getPassword());
+                // worker.setPassword(user.getPassword());
                 worker.setIdRole(RoleEmployee.ADMIN);
                 workerRepository.save(worker);
             }

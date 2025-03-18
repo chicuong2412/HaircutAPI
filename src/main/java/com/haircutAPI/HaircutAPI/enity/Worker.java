@@ -1,7 +1,10 @@
 package com.haircutAPI.HaircutAPI.enity;
 
+import java.time.LocalDate;
+
 import com.haircutAPI.HaircutAPI.ENUM.RoleEmployee;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -21,21 +24,22 @@ public class Worker {
     String id;
 
     String username;
-    String password;
-    String nameWorker;
-    String specialities;
-    double salary;
-    double Rate;
-    String DoB;
-    String email;
-    String address;
-    String phoneNumber;
+    String nameWorker = "";
+    String specialities = "";
+    double salary = 0;
+    double Rate = 0;
+    LocalDate DoB = LocalDate.now();
+    String email = "";
+    String address = "";
+    String phoneNumber = "";
     String idLocation;
+    String imgSrc = "../images/avatarDefault.png";
 
     @Enumerated(EnumType.ORDINAL)
-    RoleEmployee idRole;
-    String startDate;
+    RoleEmployee idRole = RoleEmployee.EMPLOYEE;
+    LocalDate startDate = LocalDate.now();
 
-    
+    @Column(columnDefinition = "boolean default false")
+    boolean isDeleted;
 
 }

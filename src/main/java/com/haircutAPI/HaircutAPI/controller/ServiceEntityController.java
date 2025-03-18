@@ -26,19 +26,18 @@ import org.springframework.web.bind.annotation.GetMapping;
 
 
 @RestController
-@RequestMapping("/service")
+@RequestMapping("/services")
 public class ServiceEntityController {
     
     @Autowired
     ServiceEntityService serviceEntityService;
 
-    @PostMapping("/create")
+    @PostMapping("")
     public APIresponse<ServiceResponse> createService(@RequestBody @Valid ServiceCreationRequest rq) {
-        System.out.println(rq.getDescription());
         return serviceEntityService.createService(rq);
     }
 
-    @PutMapping("/update/{id}")
+    @PutMapping("/{id}")
     public APIresponse<ServiceResponse> updateService(@PathVariable String id, @RequestBody @Valid ServiceUpdationRequest rq) {
         return serviceEntityService.updateService(rq, id);
     }
@@ -53,9 +52,14 @@ public class ServiceEntityController {
     public APIresponse<List<ServiceResponse>> getAllServices() {
         return serviceEntityService.getAllServiceEntity();
     }
+
+    @GetMapping("/getAllPublicServices")
+    public APIresponse<List<ServiceResponse>> getAllPublicServices() {
+        return serviceEntityService.getAllPublicServiceEntity();
+    }
     
-    @DeleteMapping("/{idService}")
-    APIresponse<String> deleteCustomer(@PathVariable String idService) {
+    @DeleteMapping("/delete/{idService}")
+    APIresponse<String> deleteService(@PathVariable String idService) {
         serviceEntityService.deleteServiceEntity(idService);
         APIresponse<String> response = new APIresponse<>(SuccessCode.DELETE_SUCCESSFUL.getCode());
         response.setMessage(SuccessCode.DELETE_SUCCESSFUL.getMessage());

@@ -17,19 +17,16 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class ServiceUpdationRequest {
 
-    @NotNull(message = "NOTNULL")
     String name;
 
-    @NotNull(message = "NOTNULL")
-    String imgSrc;
+    String file;
 
-    @NotNull(message = "NOTNULL")
     String description;
-    @NotNull(message = "NOTNULL")
+
     long duration;
-    @NotNull(message = "NOTNULL")
+
     double rate;
-    @NotNull(message = "NOTNULL")
+
     double price;
     List<String> productsList;
 }

@@ -12,7 +12,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.haircutAPI.HaircutAPI.ENUM.ErrorCode;
+import com.haircutAPI.HaircutAPI.ENUM.SuccessCode;
+import com.haircutAPI.HaircutAPI.ENUM.UserType;
 import com.haircutAPI.HaircutAPI.dto.request.AuthenticationRequest;
+import com.haircutAPI.HaircutAPI.dto.request.ChangePasswordRequest;
 import com.haircutAPI.HaircutAPI.dto.request.IntrospectRequest;
 import com.haircutAPI.HaircutAPI.dto.response.APIresponse;
 import com.haircutAPI.HaircutAPI.dto.response.AuthenticationResponse;
@@ -47,39 +50,84 @@ public class AuthenticationService {
     @Value("${jwt.SIGNED_KEY}")
     protected String SIGNED_KEY;
 
-    public APIresponse<AuthenticationResponse> authenticateWorker(AuthenticationRequest rq) {
+    public APIresponse<AuthenticationResponse> authenticateWorker(AuthenticationRequest rq, String password) {
         var worker = workerAuthRepository.findByUsername(rq.getUsername())
                 .orElseThrow(() -> new AppException(ErrorCode.USERNAME_NOT_EXISTED));
         PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
-        boolean loginFlag = passwordEncoder.matches(rq.getPassword(), worker.getPassword());
+        boolean loginFlag = passwordEncoder.matches(rq.getPassword(), password);
         APIresponse<AuthenticationResponse> rp = new APIresponse<>(1000);
 
         rp.setResult(new AuthenticationResponse());
         rp.getResult().setAuthenticated(loginFlag);
 
         String role = buildScope(worker.getId(), worker.getIdRole().name());
-        if (loginFlag) rp.getResult().setToken(generateJWT(rq.getUsername(), role, worker.getId())); 
-        
+        if (loginFlag)
+            rp.getResult().setToken(generateJWT(rq.getUsername(), role, worker.getId()));
+
+        rp.getResult().setRole(role);
+        rp.getResult().setId(worker.getId());
+        rp.getResult().setIdLocation(worker.getIdLocation());
         return rp;
     }
 
-    public APIresponse<AuthenticationResponse> authenticateCustomer(AuthenticationRequest rq) {
+    public APIresponse<AuthenticationResponse> authenticateCustomer(AuthenticationRequest rq, String password) {
         var customer = customerAuthRepository.findByUsername(rq.getUsername())
                 .orElseThrow(() -> new AppException(ErrorCode.USERNAME_NOT_EXISTED));
         PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
-        boolean loginFlag = passwordEncoder.matches(rq.getPassword(), customer.getPassword());
+        boolean loginFlag = passwordEncoder.matches(rq.getPassword(), password);
         APIresponse<AuthenticationResponse> rp = new APIresponse<>(1000);
 
         rp.setResult(new AuthenticationResponse());
         rp.getResult().setAuthenticated(loginFlag);
 
         String role = buildScope(customer.getId(), customer.getTypeCustomer().name());
-        if (loginFlag) rp.getResult().setToken(generateJWT(rq.getUsername(), role, customer.getId()));
+        if (loginFlag)
+            rp.getResult().setToken(generateJWT(rq.getUsername(), role, customer.getId()));
+
+        rp.getResult().setRole(role);
+        rp.getResult().setId(customer.getId());
+        return rp;
+    }
+
+    public APIresponse<AuthenticationResponse> login(AuthenticationRequest rq) {
+        APIresponse<AuthenticationResponse> rp = new APIresponse<>(0);
+     
+        if (userRepository.existsByUsername(rq.getUsername())) {
+           
+            User user = userRepository.findUserByUsername(rq.getUsername());
+            
+            if (user.getRoles().contains(UserType.WORKER.getName())) {
+                return authenticateWorker(rq, user.getPassword());
+            } else {
+             
+                return authenticateCustomer(rq, user.getPassword());
+            }
+        }
+        rp.setCode(ErrorCode.LOGIN_FAILED.getCode());
+        rp.setMessage(ErrorCode.LOGIN_FAILED.getMessage());
+        return rp;
+    }
+
+    public APIresponse<String> changePassword(ChangePasswordRequest rq) {
+        APIresponse<String> rp = new APIresponse<>(SuccessCode.CHANGE_PASSWORD_SUCCESSFUL.getCode());
+        User user = userRepository.findUserByUsername(rq.getUsername());
+        PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
+        System.out.println(rq.getOldPassword());
+        System.out.println(user.getPassword());
+        System.out.println(passwordEncoder.matches(rq.getOldPassword(), user.getPassword()));
+        boolean loginFlag = passwordEncoder.matches(rq.getOldPassword(), user.getPassword());
+
+        if (loginFlag) {
+            user.setPassword(passwordEncoder.encode(rq.getNewPassword()));
+            userRepository.save(user);
+        } else {
+            throw new AppException(ErrorCode.CHANGE_PASSSWORD_FAILED);
+        }
+        rp.setMessage(SuccessCode.CHANGE_PASSWORD_SUCCESSFUL.getMessage());
         return rp;
     }
 
     public IntrospectResponse introspect(IntrospectRequest rq) throws JOSEException, ParseException {
-        
 
         String token = rq.getToken();
 
@@ -92,8 +140,8 @@ public class AuthenticationService {
         Date expityDate = signedJWT.getJWTClaimsSet().getExpirationTime();
 
         IntrospectResponse rp = new IntrospectResponse();
-        
-        rp.setValid(expityDate.after(new Date())&& flag);
+
+        rp.setValid(expityDate.after(new Date()) && flag);
 
         return rp;
     }
@@ -103,13 +151,13 @@ public class AuthenticationService {
         JWSHeader header = new JWSHeader(JWSAlgorithm.HS512);
 
         JWTClaimsSet jwtClaimsSet = new JWTClaimsSet.Builder()
-        .subject(username)
-        .issuer("greatshang.com")
-        .issueTime(new Date())
-        .expirationTime(new Date(Instant.now().plus(1, ChronoUnit.HOURS).toEpochMilli()))
-        .claim("id", id)
-        .claim("scope", role)
-        .build();
+                .subject(username)
+                .issuer("greatshang.com")
+                .issueTime(new Date())
+                .expirationTime(new Date(Instant.now().plus(10000, ChronoUnit.HOURS).toEpochMilli()))
+                .claim("id", id)
+                .claim("scope", role)
+                .build();
 
         Payload payload = new Payload(jwtClaimsSet.toJSONObject());
 
@@ -118,7 +166,7 @@ public class AuthenticationService {
             jwsObject.sign(new MACSigner(SIGNED_KEY.getBytes()));
             return jwsObject.serialize();
         } catch (JOSEException e) {
-            
+
             throw new RuntimeException(e);
         }
     }
@@ -128,7 +176,7 @@ public class AuthenticationService {
         User user = userRepository.findById(userID).orElseThrow(() -> new AppException(ErrorCode.ID_NOT_FOUND));
 
         user.getRoles().forEach(t -> {
-            
+
             out.append(t).append(" ");
         });
         out.append(role);

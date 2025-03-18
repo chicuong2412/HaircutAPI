@@ -4,6 +4,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.haircutAPI.HaircutAPI.dto.request.AuthenticationRequest;
+import com.haircutAPI.HaircutAPI.dto.request.ChangePasswordRequest;
 import com.haircutAPI.HaircutAPI.dto.request.IntrospectRequest;
 import com.haircutAPI.HaircutAPI.dto.response.APIresponse;
 import com.haircutAPI.HaircutAPI.dto.response.AuthenticationResponse;
@@ -26,18 +27,19 @@ public class AuthenticationController {
     @Autowired
     AuthenticationService authenticationService;
 
-    @PostMapping("/workers/login")
-    APIresponse<AuthenticationResponse> loginForWorker(@RequestBody AuthenticationRequest rq) {
-        return authenticationService.authenticateWorker(rq);
+    @PostMapping("/login")
+    APIresponse<AuthenticationResponse> login(@RequestBody AuthenticationRequest rq) {
+        return authenticationService.login(rq);
     }
 
-    @PostMapping("/customers/login")
-    APIresponse<AuthenticationResponse> loginForCustomer(@RequestBody AuthenticationRequest rq) {
-        return authenticationService.authenticateCustomer(rq);
+
+    @PostMapping("/changepassword")
+    APIresponse<String> chagnePassword(@RequestBody ChangePasswordRequest rq) {
+        return authenticationService.changePassword(rq);
     }
 
     @PostMapping("/introspect")
-    APIresponse<IntrospectResponse> postMethodName(@RequestBody IntrospectRequest rq) {
+    APIresponse<IntrospectResponse> introspect(@RequestBody IntrospectRequest rq) {
         var rp = new APIresponse<IntrospectResponse>(202);
         try {
             rp.setResult(authenticationService.introspect(rq));
@@ -50,8 +52,4 @@ public class AuthenticationController {
         }
         return rp;
     }
-    
-
-    
-
 }

@@ -2,6 +2,9 @@ package com.haircutAPI.HaircutAPI.dto.request.CustomerRequest;
 
 import com.haircutAPI.HaircutAPI.ENUM.CustomerTypes;
 
+import java.time.LocalDate;
+
+
 import jakarta.validation.constraints.Size;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -23,32 +26,26 @@ public class CustomerCreationRequest {
     @NotNull(message = "NOTNULL")
     String password;
 
-    @NotNull(message = "NOTNULL")
     String nameCustomer;
     
-    @NotNull(message = "NOTNULL")
     double loyaltyPoint;
 
-    @NotNull(message = "NOTNULL")
-    String DoB;
+    LocalDate DoB;
 
     @Email(message = "EMAIL_INVALID")
     @NotNull(message = "NOTNULL")
     String email;
 
-    @NotNull(message = "NOTNULL")
     String address;
 
-    @NotNull(message = "NOTNULL")
     String phoneNumber;
 
-    @NotNull(message = "NOTNULL")
-    String startDate;
+    String file;
 
-    @NotNull(message = "NOTNULL")
-    String lastDayUsing;
+    // LocalDate startDate;
 
-    @NotNull(message = "NOTNULL")
+    // LocalDate lastDayUsing;
+
     CustomerTypes typeCustomer;
 
 }

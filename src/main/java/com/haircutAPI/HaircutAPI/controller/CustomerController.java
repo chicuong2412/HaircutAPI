@@ -21,7 +21,7 @@ import com.haircutAPI.HaircutAPI.dto.response.CustomerResponse;
 import com.haircutAPI.HaircutAPI.services.CustomerService;
 
 import jakarta.validation.Valid;
-import org.springframework.web.bind.annotation.RequestParam;
+// import org.springframework.web.bind.annotation.RequestParam;
 
 
 @RestController
@@ -40,11 +40,10 @@ public class CustomerController {
     }
 
     @GetMapping
-    APIresponse<List<CustomerResponse>> getCustomers(@RequestParam ("name") String name) {
-        
+    APIresponse<List<CustomerResponse>> getCustomers() {
         APIresponse<List<CustomerResponse>> reponse = new APIresponse<>(SuccessCode.GET_DATA_SUCCESSFUL.getCode());
         reponse.setMessage(SuccessCode.GET_DATA_SUCCESSFUL.getMessage());
-        reponse.setResult(customerService.getAllCustomers(name));
+        reponse.setResult(customerService.getAllCustomers(""));
         return reponse;
     }
 
@@ -61,7 +60,7 @@ public class CustomerController {
         return reponse;
     }
 
-    @PutMapping("/update/{customerID}")
+    @PutMapping("/{customerID}")
     APIresponse<CustomerResponse> updateCustomerInfo(@PathVariable String customerID, @RequestBody @Valid CustomerUpdateRequest rq) {
         APIresponse<CustomerResponse> reponse = new APIresponse<>(SuccessCode.UPDATE_DATA_SUCCESSFUL.getCode());
         reponse.setMessage(SuccessCode.UPDATE_DATA_SUCCESSFUL.getMessage());
@@ -69,11 +68,16 @@ public class CustomerController {
         return reponse;
     }
 
-    @DeleteMapping("/{customerID}")
+    @DeleteMapping("/delete/{customerID}")
     APIresponse<String> deleteCustomer(@PathVariable String customerID) {
         customerService.deleteCustomer(customerID);
         APIresponse<String> response = new APIresponse<>(SuccessCode.DELETE_SUCCESSFUL.getCode());
         response.setMessage(SuccessCode.DELETE_SUCCESSFUL.getMessage());
         return response;
+    }
+
+    @GetMapping("/getMyAvatar")
+    APIresponse<String> getAvatar() {
+        return customerService.getMyAvatarSource(SecurityContextHolder.getContext().getAuthentication());
     }
 }

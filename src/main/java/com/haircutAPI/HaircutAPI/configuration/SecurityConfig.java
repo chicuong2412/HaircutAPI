@@ -13,19 +13,22 @@ import org.springframework.security.oauth2.jose.jws.MacAlgorithm;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.filter.CorsFilter;
 
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
 public class SecurityConfig {
 
-    private final String[] PublicEndpoints = { "/workers", "/customers", "/auth/workers/login", "/auth/introspect",
-            "/auth/customers/login" };
-    private final String[] publicGetEndpoints = { "/location/getLocations", "/location/getLocation/**",
-            "/service/getServiceByID/**",
-            "/service/getAllServices",
-            "/product/getProductByID/**", "/product/getProducts", "/combo/getComboByID/**", "/combo/getAllCombos",
-            "/combo/getComboByID/**" };
+    private final String[] PublicEndpoints = { "/workers", "/customers", "/auth/workers/login", "/auth/introspect", "/images/uploadImage",
+            "/auth/customers/login", "auth/login", "auth/changepassword" };
+    private final String[] publicGetEndpoints = { "/locations/getLocations", "/locations/getLocation/**",
+            "/services/getServiceByID/**",
+            "/services/getAllServices", "/services/getAllPublicServices" ,
+            "/products/getProductByID/**", "/products/getProducts", "/combos/getComboByID/**", "/combos/getAllCombos", "combos/getAllPublicCombos",
+            "/combos/getComboByID/**", "locations/getPublicLocations", "/workers/getPublicByIdLocation" };
     @Value("${jwt.SIGNED_KEY}")
     protected String SIGNED_KEY;
 
@@ -42,7 +45,22 @@ public class SecurityConfig {
             });
         });
         httpSecurity.csrf(t -> t.disable());
+        httpSecurity.addFilter(corsFilter());
         return httpSecurity.build();
+    }
+
+    @Bean
+    public CorsFilter corsFilter() {
+        CorsConfiguration corsConfiguration = new CorsConfiguration();
+
+        corsConfiguration.addAllowedOrigin("*");
+        corsConfiguration.addAllowedMethod("*");
+        corsConfiguration.addAllowedHeader("*");
+
+        UrlBasedCorsConfigurationSource urlBasedCorsConfigurationSource = new UrlBasedCorsConfigurationSource();
+        urlBasedCorsConfigurationSource.registerCorsConfiguration("/**", corsConfiguration);
+
+        return new CorsFilter(urlBasedCorsConfigurationSource);
     }
 
     @Bean

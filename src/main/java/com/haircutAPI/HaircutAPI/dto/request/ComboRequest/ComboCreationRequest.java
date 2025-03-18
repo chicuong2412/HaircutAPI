@@ -14,15 +14,13 @@ public class ComboCreationRequest {
     @NotNull(message = "NOTNULL")
     String name;
 
-    @NotNull(message = "NOTNULL")
-    String imgSrc;
+    String file;
 
-    @NotNull(message = "NOTNULL")
     String description;
-    @NotNull(message = "NOTNULL")
+
     long duration;
-    @NotNull(message = "NOTNULL")
+
     double rate;
-    @NotNull(message = "NOTNULL")
+
     double price;
 }

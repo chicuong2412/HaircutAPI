@@ -12,5 +12,9 @@ public class AuthenticationResponse {
 
     boolean authenticated;
     String token;
+
+    String role;
+    String id;
+    String idLocation;
     
 }

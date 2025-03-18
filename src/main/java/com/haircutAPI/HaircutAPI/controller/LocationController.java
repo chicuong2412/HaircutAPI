@@ -25,18 +25,18 @@ import org.springframework.web.bind.annotation.GetMapping;
 
 
 @RestController
-@RequestMapping("/location")
+@RequestMapping("/locations")
 public class LocationController {
 
     @Autowired
     LocationService locationService;
 
-    @PostMapping("/create")
+    @PostMapping("")
     public APIresponse<LocationResponse> createLocation(@RequestBody @Valid LocationCreationRequest rq) {
         return locationService.createLocation(rq);
     }
 
-    @PutMapping("/update/{id}")
+    @PutMapping("/{id}")
     public APIresponse<LocationResponse> updateLocation(@PathVariable String id, @RequestBody LocationUpdationRequest rq) {
         return locationService.updateLocation(rq, id);
     }
@@ -51,7 +51,12 @@ public class LocationController {
         return locationService.getLocations();
     }
 
-    @DeleteMapping("/deleteLocation/{id}")
+    @GetMapping("/getPublicLocations")
+    public APIresponse<List<LocationResponse>> getAllPublicLocations() {
+        return locationService.getPublicLocations();
+    }
+
+    @DeleteMapping("/delete/{id}")
     public APIresponse<String> deleteLocation(@PathVariable String id) {
         return locationService.deleteLocation(id);
     }

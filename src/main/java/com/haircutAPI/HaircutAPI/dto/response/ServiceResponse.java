@@ -1,6 +1,5 @@
 package com.haircutAPI.HaircutAPI.dto.response;
 
-import java.util.List;
 import java.util.Set;
 
 import com.haircutAPI.HaircutAPI.enity.Product;
@@ -30,4 +29,5 @@ public class ServiceResponse {
     double rate;
     double price;
     Set<Product> productsList;
+    boolean deleted;
 }

@@ -1,5 +1,6 @@
 package com.haircutAPI.HaircutAPI.exception;
 
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -17,6 +18,7 @@ public class GlobalExceptionHandler {
     @SuppressWarnings("rawtypes")
     @ExceptionHandler(value = Exception.class)
     ResponseEntity<APIresponse> handlingRuntimeException(Exception exception) {
+        System.out.println(exception.getCause());
         ErrorCode errCode = ErrorCode.UNCATEGORIZED_EXCEPTION;
         APIresponse rp = new APIresponse<>(errCode.getCode());
         System.out.println(exception);
@@ -56,6 +58,15 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(value = AccessDeniedException.class)
     ResponseEntity<APIresponse> handlingJOSEException(AccessDeniedException e) {
         ErrorCode errCode = ErrorCode.ACCESS_DENIED;
+        APIresponse rp = new APIresponse<>(errCode.getCode());
+        rp.setMessage(errCode.getMessage());
+        return ResponseEntity.badRequest().body(rp);
+    }
+
+    @SuppressWarnings("rawtypes")
+    @ExceptionHandler(value = DataIntegrityViolationException.class)
+    ResponseEntity<APIresponse> handlingDataIntegrity(DataIntegrityViolationException e) {
+        ErrorCode errCode = ErrorCode.DATA_INTEGRIY;
         APIresponse rp = new APIresponse<>(errCode.getCode());
         rp.setMessage(errCode.getMessage());
         return ResponseEntity.badRequest().body(rp);

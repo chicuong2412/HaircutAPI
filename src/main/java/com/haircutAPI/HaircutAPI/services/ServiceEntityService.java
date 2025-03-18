@@ -1,5 +1,10 @@
 package com.haircutAPI.HaircutAPI.services;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.security.GeneralSecurityException;
+import java.util.Base64;
 import java.util.HashSet;
 import java.util.List;
 
@@ -31,6 +36,8 @@ public class ServiceEntityService {
     ServicesUtils servicesUtils;
     @Autowired
     ProductRepository productRepository;
+    @Autowired
+    ImagesUploadService imagesUploadService;
 
     @PreAuthorize("hasAuthority('SCOPE_ADMIN')")
     public APIresponse<ServiceResponse> createService(ServiceCreationRequest rq) {
@@ -39,9 +46,29 @@ public class ServiceEntityService {
 
         var products = productRepository.findAllById(rq.getProductsList());
 
-        ServiceEntity serviceEntity = serviceEntityMapper.toServiceEntity(rq);
+        ServiceEntity serviceEntity = new ServiceEntity();
+        serviceEntity = serviceEntityMapper.toServiceEntity(serviceEntity, rq);
 
         serviceEntity.setProductsList(new HashSet<>(products));
+
+        serviceEntity.setId(servicesUtils.idGenerator("SE", "service"));
+
+        if (rq.getFile() != null && !rq.getFile().equals("")) {
+            byte[] bytes = Base64.getDecoder().decode(rq.getFile());
+            File file;
+            try {
+                file = File.createTempFile("temp", null);
+                FileOutputStream fos = new FileOutputStream(file);
+                fos.write(bytes);
+                fos.flush();
+                fos.close();
+                var temp = imagesUploadService.uploadImageToGoogleDrive(file);
+                serviceEntity.setImgSrc(temp.getImgSrc());
+            } catch (IOException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        }
 
         serviceRepository.save(serviceEntity);
 
@@ -50,6 +77,7 @@ public class ServiceEntityService {
         return rp;
     }
 
+    @SuppressWarnings("finally")
     @PreAuthorize("hasAuthority('SCOPE_ADMIN')")
     public APIresponse<ServiceResponse> updateService(ServiceUpdationRequest rq, String idService) {
 
@@ -63,13 +91,34 @@ public class ServiceEntityService {
 
         serviceEntity.setProductsList(new HashSet<>(products));
 
-        serviceRepository.save(serviceEntity);
+        try {
+            if (rq.getFile() != null && !rq.getFile().equals("")) {
+                byte[] bytes = Base64.getDecoder().decode(rq.getFile());
+                File file;
+                file = File.createTempFile("temp", null);
+                FileOutputStream fos = new FileOutputStream(file);
+                fos.write(bytes);
+                fos.flush();
+                fos.close();
+                try {
+                    if (serviceEntity.getImgSrc() != null && !serviceEntity.getImgSrc().equals("")) {
+                        imagesUploadService.deleteFile(serviceEntity.getImgSrc().split("=")[1].replace("&sz", ""));
+                    }
+                } catch (Exception e) {
 
-        rp.setMessage(SuccessCode.UPDATE_DATA_SUCCESSFUL.getMessage());
-
-        rp.setResult(serviceEntityMapper.toServiceResponse(serviceEntity));
-
-        return rp;
+                } finally {
+                    var temp = imagesUploadService.uploadImageToGoogleDrive(file);
+                    serviceEntity.setImgSrc(temp.getImgSrc());
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            serviceRepository.save(serviceEntity);
+            rp.setMessage(SuccessCode.UPDATE_DATA_SUCCESSFUL.getMessage());
+            rp.setResult(serviceEntityMapper.toServiceResponse(serviceEntity));
+            return rp;
+        }
     }
 
     public APIresponse<ServiceResponse> getServiceEntity(String idService) {
@@ -94,12 +143,23 @@ public class ServiceEntityService {
         return rp;
     }
 
+    public APIresponse<List<ServiceResponse>> getAllPublicServiceEntity() {
+        List<ServiceEntity> serviceEntities = serviceRepository.findByIsDeletedFalse();
+
+        APIresponse<List<ServiceResponse>> rp = new APIresponse<>(SuccessCode.GET_DATA_SUCCESSFUL.getCode());
+        rp.setMessage(SuccessCode.GET_DATA_SUCCESSFUL.getMessage());
+        rp.setResult(serviceEntityMapper.toServiceResponses(serviceEntities));
+
+        return rp;
+    }
+
     @PreAuthorize("hasAuthority('SCOPE_ADMIN')")
     public void deleteServiceEntity(String idService) {
 
         if (!serviceRepository.existsById(idService))
             throw new AppException(ErrorCode.ID_NOT_FOUND);
-
-        serviceRepository.deleteById(idService);
+        var service = serviceRepository.findById(idService).orElse(null);
+        service.setDeleted(true);
+        serviceRepository.save(service);
     }
 }

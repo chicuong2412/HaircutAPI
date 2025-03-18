@@ -5,7 +5,9 @@ import java.util.Set;
 
 import com.haircutAPI.HaircutAPI.ENUM.AppointmentStatus;
 import com.haircutAPI.HaircutAPI.enity.ComboEntity;
+import com.haircutAPI.HaircutAPI.enity.Customer;
 import com.haircutAPI.HaircutAPI.enity.ServiceEntity;
+import com.haircutAPI.HaircutAPI.enity.Worker;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -25,8 +27,8 @@ import lombok.experimental.FieldDefaults;
 public class AppointmentResponse {
 
     String id;
-    String idCustomer;
-    String idWorker;
+    Customer customer;
+    Worker worker;
     AppointmentStatus status;
 
     String idLocation;
@@ -37,4 +39,5 @@ public class AppointmentResponse {
     Set<ComboEntity> idCombo;
 
     double price;
+    boolean deleted;
 }

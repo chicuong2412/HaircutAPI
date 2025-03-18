@@ -23,4 +23,5 @@ public class ComboResponse {
     long duration;
     double rate;
     double price;
+    boolean deleted;
 }

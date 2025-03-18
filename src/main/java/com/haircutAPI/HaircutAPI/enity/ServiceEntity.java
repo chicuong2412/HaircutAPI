@@ -1,15 +1,11 @@
 package com.haircutAPI.HaircutAPI.enity;
 
-import java.util.List;
 import java.util.Set;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -24,19 +20,21 @@ public class ServiceEntity {
 
 
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "idService")
     String id;
 
     String name;
-    String imgSrc;
+    String imgSrc = "../images/serviceDefault.png";
 
     @Column(columnDefinition = "TEXT")
-    String description;
-    long duration;
-    double rate;
-    double price;
+    String description = "";
+    long duration = 0;
+    double rate = 0;
+    double price = 0;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     Set<Product> productsList;
+
+    @Column(columnDefinition = "boolean default false")
+    boolean isDeleted;
 }

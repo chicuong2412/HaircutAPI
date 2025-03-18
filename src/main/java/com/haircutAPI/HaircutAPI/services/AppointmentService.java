@@ -3,9 +3,12 @@ package com.haircutAPI.HaircutAPI.services;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
@@ -21,6 +24,7 @@ import com.haircutAPI.HaircutAPI.dto.response.APIresponse;
 import com.haircutAPI.HaircutAPI.dto.response.AppointmentResponse;
 import com.haircutAPI.HaircutAPI.enity.Appointment;
 import com.haircutAPI.HaircutAPI.enity.AppointmentDetails;
+import com.haircutAPI.HaircutAPI.enity.Worker;
 import com.haircutAPI.HaircutAPI.exception.DefinedException.AppException;
 import com.haircutAPI.HaircutAPI.mapper.AppointmentMapper;
 import com.haircutAPI.HaircutAPI.repositories.AppointmentDetailsRepository;
@@ -48,7 +52,6 @@ public class AppointmentService {
                 throw new AccessDeniedException("Access Denied");
             }
         }
-
         if (!checkValidInfomationRq(rq))
             throw new AppException(ErrorCode.DATA_INPUT_INVALID);
 
@@ -70,16 +73,29 @@ public class AppointmentService {
         appointmentDetails.setId(appointment.getId());
         appointmentDetailsRepository.save(appointmentDetails);
 
-        rp.setResult(appointmentMapper.appointmentResponseGenerator(appointment, appointmentDetails));
-
+        rp.setResult(appointmentMapper.appointmentResponseGenerator(appointment, appointmentDetails,
+                servicesUtils.getCustomerByID(appointment.getIdCustomer()),
+                servicesUtils.findWorkerById(appointment.getIdWorker())));
+        List<String> userIds = new ArrayList<>();
+        userIds.add(appointment.getIdCustomer());
+        userIds.add(appointment.getIdWorker());
+        servicesUtils.sendNotificationsToUsers(userIds, "New Appointmet",
+                "There is a new appointment for you at: " + appointment.getDateTime().toString());
         return rp;
     }
 
-    @PreAuthorize("hasAuthority('SCOPE_ADMIN')")
-    public APIresponse<List<AppointmentResponse>> getAllAppointments() {
+    @SuppressWarnings("unchecked")
+    @PreAuthorize("hasAuthority('SCOPE_ADMIN') or hasAuthority('SCOPE_MANAGER')")
+    public APIresponse<List<AppointmentResponse>> getAllAppointments(Authentication authentication) {
+        if (!servicesUtils.checkAuthoritesHasRole((Collection<GrantedAuthority>) authentication.getAuthorities(),
+                "SCOPE_ADMIN")) {
+            Worker workerManager = servicesUtils.findWorkerByUsername(authentication.getName());
+            return getAppointmentByIdLocation(workerManager.getIdLocation(), authentication);
+        }
         var list = appointmentRepository.findAll();
 
         List<AppointmentResponse> result = findAppointmentDetailsByListAppointment(list);
+        result.sort((o1, o2) -> o1.getDateTime().compareTo(o2.getDateTime()));
         APIresponse<List<AppointmentResponse>> rp = new APIresponse<>(SuccessCode.GET_DATA_SUCCESSFUL.getCode());
         rp.setResult(result);
         rp.setMessage(SuccessCode.GET_DATA_SUCCESSFUL.getMessage());
@@ -112,7 +128,9 @@ public class AppointmentService {
 
         }
 
-        var appointmentRp = appointmentMapper.appointmentResponseGenerator(appointment, appointmentDetail);
+        var appointmentRp = appointmentMapper.appointmentResponseGenerator(appointment, appointmentDetail,
+                servicesUtils.getCustomerByID(appointment.getIdCustomer()),
+                servicesUtils.findWorkerById(appointment.getIdWorker()));
 
         rp.setMessage(SuccessCode.GET_DATA_SUCCESSFUL.getMessage());
         rp.setResult(appointmentRp);
@@ -156,25 +174,42 @@ public class AppointmentService {
         appointmentDetails.setIdService(servicesUtils.toServiceEntitiesSet(rq.getIdService()));
         appointmentDetails.setIdCombo(servicesUtils.toComboEnitiesSet(rq.getIdCombo()));
 
-        //Save entities
+        // Save entities
         appointmentDetailsRepository.save(appointmentDetails);
         appointmentRepository.save(appointment);
 
         APIresponse<AppointmentResponse> apIresponse = new APIresponse<>(SuccessCode.UPDATE_DATA_SUCCESSFUL.getCode());
         apIresponse.setMessage(SuccessCode.UPDATE_DATA_SUCCESSFUL.getMessage());
-        apIresponse.setResult(appointmentMapper.appointmentResponseGenerator(appointment, appointmentDetails));
+        apIresponse.setResult(appointmentMapper.appointmentResponseGenerator(appointment, appointmentDetails,
+                servicesUtils.getCustomerByID(appointment.getIdCustomer()),
+                servicesUtils.findWorkerById(appointment.getIdWorker())));
 
         return apIresponse;
+    }
+
+    public APIresponse<String> cancelAppointment(String id, Authentication authentication) {
+        APIresponse<String> ou = new APIresponse<>(SuccessCode.UPDATE_DATA_SUCCESSFUL.getCode());
+        ou.setMessage(SuccessCode.UPDATE_DATA_SUCCESSFUL.getMessage());
+        Appointment appointment = appointmentRepository.findById(id)
+                .orElseThrow(() -> new AppException(ErrorCode.ID_NOT_FOUND));
+        appointment.setStatus(AppointmentStatus.CANCELLED);
+        List<String> userIds = new ArrayList<>();
+        userIds.add(appointment.getIdWorker());
+        userIds.add(appointment.getIdCustomer());
+        servicesUtils.sendNotificationsToUsers(userIds, "Appointmemt cancelled",
+                "Your appointmet at " +
+                        appointment.getDateTime().toString().replace("T", " ") + " has been cancelled");
+        appointmentRepository.save(appointment);
+        return ou;
     }
 
     @PreAuthorize("hasAuthority('SCOPE_ADMIN')")
     public APIresponse<String> deleteAppointment(String id) {
         if (!appointmentRepository.existsById(id))
             throw new AppException(ErrorCode.DATA_INPUT_INVALID);
-
-        appointmentRepository.deleteById(id);
-        appointmentDetailsRepository.deleteById(id);
-
+        var appointment = appointmentRepository.findById(id).orElse(null);
+        appointment.setDeleted(true);
+        appointmentRepository.save(appointment);
         APIresponse<String> apIresponse = new APIresponse<>(SuccessCode.DELETE_SUCCESSFUL.getCode());
         apIresponse.setMessage(SuccessCode.DELETE_SUCCESSFUL.getMessage());
         return apIresponse;
@@ -221,7 +256,6 @@ public class AppointmentService {
     }
 
     @SuppressWarnings("unchecked")
-    @PreAuthorize("hasAuthority('SCOPE_ADMIN') or hasAuthority('SCOPE_MANAGER')")
     public APIresponse<List<AppointmentResponse>> getAppointmentByIdWorker(Authentication authentication,
             String idWorker) {
 
@@ -231,6 +265,9 @@ public class AppointmentService {
                 "SCOPE_ADMIN")) {
             if (!servicesUtils.findWorkerByUsername(authentication.getName()).getIdLocation()
                     .equals(servicesUtils.findWorkerById(idWorker).getIdLocation())) {
+                throw new AccessDeniedException("Access Denied");
+            } else if (!servicesUtils.findWorkerByUsername(authentication.getName()).getId()
+                    .equals(servicesUtils.findWorkerById(idWorker).getId())) {
                 throw new AccessDeniedException("Access Denied");
             }
 
@@ -252,13 +289,15 @@ public class AppointmentService {
             AppointmentDetails appointmentDetail = appointmentDetailsRepository.findById(appointment.getId())
                     .orElseThrow();
             listAppointmentResponses
-                    .add(appointmentMapper.appointmentResponseGenerator(appointment, appointmentDetail));
+                    .add(appointmentMapper.appointmentResponseGenerator(appointment, appointmentDetail,
+                            servicesUtils.getCustomerByID(appointment.getIdCustomer()),
+                            servicesUtils.findWorkerById(appointment.getIdWorker())));
         }
         return listAppointmentResponses;
     }
 
     private boolean checkValidInfomationRq(AppointmentCreationRequest rq) {
-        if (rq.getDateTime().isBefore(LocalDateTime.now()))
+        if (!rq.getDateTime().isAfter(LocalDateTime.now()))
             return false;
 
         if (AppointmentStatus.WAITING.compareTo(rq.getStatus()) != 0)
@@ -273,11 +312,15 @@ public class AppointmentService {
         if (!servicesUtils.isLocationIdExisted(rq.getIdLocation()))
             return false;
 
+        if (!servicesUtils.findWorkerById(rq.getIdWorker()).getIdLocation().equals(rq.getIdLocation()))
+            throw new AppException(ErrorCode.WORKER_LOCATION_NOT_MATCHED);
+
         return true;
     }
 
     private boolean checkValidInfomationUpdate(AppointmentUpdationRequest rq) {
-        if (rq.getDateTime().isBefore(LocalDateTime.now()))
+
+        if (!rq.getDateTime().isAfter(LocalDateTime.now()))
             return false;
 
         if (!servicesUtils.isCustomerIdExisted(rq.getIdCustomer()))
@@ -289,7 +332,29 @@ public class AppointmentService {
         if (!servicesUtils.isLocationIdExisted(rq.getIdLocation()))
             return false;
 
+        if (!servicesUtils.findWorkerById(rq.getIdWorker()).getIdLocation().equals(rq.getIdLocation()))
+            throw new AppException(ErrorCode.WORKER_LOCATION_NOT_MATCHED);
+
         return true;
+    }
+
+    // Shedule Task
+
+    @Scheduled(fixedDelay = 120000)
+    public void checkOverdueAppointment() {
+        List<Appointment> list = appointmentRepository.findAll();
+        for (Appointment appointment : list) {
+            if (appointment.getDateTime().isBefore(LocalDateTime.now())
+                    && appointment.getStatus().compareTo(AppointmentStatus.WAITING) == 0) {
+                appointment.setStatus(AppointmentStatus.OVERDUE);
+                appointmentRepository.save(appointment);
+                List<String> userIds = new ArrayList<>();
+                userIds.add(appointment.getIdCustomer());
+                userIds.add(appointment.getIdWorker());
+                servicesUtils.sendNotificationsToUsers(userIds, "Overdue Appointmet",
+                        "The appointment at " + appointment.getDateTime().toString().replace("T", " ") + " is overdue");
+            }
+        }
     }
 
 }

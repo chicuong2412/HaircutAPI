@@ -1,7 +1,7 @@
 package com.haircutAPI.HaircutAPI.ENUM;
 
 public enum UserType {
-    CUSTOMER(2, "CUSTOMER"), WORKER(3, "CUSTOMER");
+    CUSTOMER(2, "CUSTOMER"), WORKER(3, "WORKER");
 
     private int code;
     private String name;

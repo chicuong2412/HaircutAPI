@@ -1,5 +1,10 @@
 package com.haircutAPI.HaircutAPI.services;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.security.GeneralSecurityException;
+import java.util.Base64;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +21,7 @@ import com.haircutAPI.HaircutAPI.enity.Product;
 import com.haircutAPI.HaircutAPI.exception.DefinedException.AppException;
 import com.haircutAPI.HaircutAPI.mapper.ProductMapper;
 import com.haircutAPI.HaircutAPI.repositories.ProductRepository;
+import com.haircutAPI.HaircutAPI.utils.ServicesUtils;
 
 @Service
 public class ProductService {
@@ -24,10 +30,34 @@ public class ProductService {
     ProductRepository productRepository;
     @Autowired
     ProductMapper productMapper;
+    @Autowired
+    ServicesUtils servicesUtils;
+    @Autowired
+    ImagesUploadService imagesUploadService;
 
     @PreAuthorize("hasAuthority('SCOPE_ADMIN')")
     public APIresponse<ProductResponse> createProduct(ProductCreationRequest rq) {
-        Product product = productMapper.toProduct(rq);
+        Product product = new Product();
+        product = productMapper.toProduct(product, rq);
+
+        product.setId(servicesUtils.idGenerator("PO", "product"));
+
+        if (rq.getFile() != null && !rq.getFile().equals("")) {
+            byte[] bytes = Base64.getDecoder().decode(rq.getFile());
+            File file;
+            try {
+                file = File.createTempFile("temp", null);
+                FileOutputStream fos = new FileOutputStream(file);
+                fos.write(bytes);
+                fos.flush();
+                fos.close();
+                var temp = imagesUploadService.uploadImageToGoogleDrive(file);
+                product.setImgSrc(temp.getImgSrc());
+            } catch (IOException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        }
 
         productRepository.save(product);
 
@@ -40,32 +70,56 @@ public class ProductService {
         return rp;
     }
 
+    @SuppressWarnings("finally")
     @PreAuthorize("hasAuthority('SCOPE_ADMIN')")
     public APIresponse<ProductResponse> updateProduct(ProductUpdatioRequest rq, String idProduct) {
         Product product = productRepository.findById(idProduct)
                 .orElseThrow(() -> new AppException(ErrorCode.ID_NOT_FOUND));
-        productMapper.updateProduct(product, rq);
-        productRepository.save(product);
         APIresponse<ProductResponse> rp = new APIresponse<>(SuccessCode.UPDATE_DATA_SUCCESSFUL.getCode());
 
         rp.setMessage(SuccessCode.UPDATE_DATA_SUCCESSFUL.getMessage());
+        productMapper.updateProduct(product, rq);
 
-        rp.setResult(productMapper.toProductResponse(product));
+        try {
+            if (rq.getFile() != null && !rq.getFile().equals("")) {
+                byte[] bytes = Base64.getDecoder().decode(rq.getFile());
+                File file;
+                file = File.createTempFile("temp", null);
+                FileOutputStream fos = new FileOutputStream(file);
+                fos.write(bytes);
+                fos.flush();
+                fos.close();
+                try {
+                    if (product.getImgSrc() != null && !product.getImgSrc().equals("")) {
+                        imagesUploadService.deleteFile(product.getImgSrc().split("=")[1].replace("&sz", ""));
+                    }
+                } catch (Exception e) {
 
-        return rp;
+                } finally {
+                    var temp = imagesUploadService.uploadImageToGoogleDrive(file);
+                    product.setImgSrc(temp.getImgSrc());
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            productRepository.save(product);
+            rp.setMessage(SuccessCode.UPDATE_DATA_SUCCESSFUL.getMessage());
+            rp.setResult(productMapper.toProductResponse(product));
+            return rp;
+        }
     }
 
     public APIresponse<ProductResponse> getProduct(String idProduct) {
         Product product = productRepository.findById(idProduct)
                 .orElseThrow(() -> new AppException(ErrorCode.ID_NOT_FOUND));
-
-        productRepository.save(product);
-
         APIresponse<ProductResponse> rp = new APIresponse<>(SuccessCode.UPDATE_DATA_SUCCESSFUL.getCode());
 
         rp.setMessage(SuccessCode.UPDATE_DATA_SUCCESSFUL.getMessage());
 
         rp.setResult(productMapper.toProductResponse(product));
+
+        rp.getResult().setDeleted(product.isDeleted());
 
         return rp;
     }
@@ -75,7 +129,7 @@ public class ProductService {
 
         rp.setMessage(SuccessCode.GET_DATA_SUCCESSFUL.getMessage());
 
-        rp.setResult(productMapper.toProductResponses(productRepository.findAll()));
+        rp.setResult(productMapper.toProductResponses(productRepository.findByIsDeletedFalse()));
 
         return rp;
     }
@@ -84,7 +138,9 @@ public class ProductService {
     public void deleteProduct(String idProduct) {
         if (!productRepository.existsById(idProduct))
             throw new AppException(ErrorCode.ID_NOT_FOUND);
-        productRepository.deleteById(idProduct);
+        var product = productRepository.findById(idProduct).orElse(null);
+        product.setDeleted(true);
+        productRepository.save(product);
     }
 
 }
