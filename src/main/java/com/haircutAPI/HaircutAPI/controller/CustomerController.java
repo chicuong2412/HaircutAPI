@@ -75,4 +75,9 @@ public class CustomerController {
         response.setMessage(SuccessCode.DELETE_SUCCESSFUL.getMessage());
         return response;
     }
+
+    @GetMapping("/getMyAvatar")
+    APIresponse<String> getAvatar() {
+        return customerService.getMyAvatarSource(SecurityContextHolder.getContext().getAuthentication());
+    }
 }

@@ -4,6 +4,7 @@ import java.util.Set;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToMany;
 import lombok.AccessLevel;
@@ -23,7 +24,7 @@ public class ServiceEntity {
     String id;
 
     String name;
-    String imgSrc = "";
+    String imgSrc = "../images/serviceDefault.png";
 
     @Column(columnDefinition = "TEXT")
     String description = "";
@@ -31,7 +32,7 @@ public class ServiceEntity {
     double rate = 0;
     double price = 0;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     Set<Product> productsList;
 
     @Column(columnDefinition = "boolean default false")

@@ -18,7 +18,7 @@ public class ComboEntity {
     String id;
 
     String name;
-    String imgSrc = "";
+    String imgSrc = "../images/comboDefault.png";
 
     @Column(columnDefinition = "TEXT")
     String description = "";

@@ -14,8 +14,7 @@ public class ComboUpdationRequest {
     @NotNull(message = "NOTNULL")
     String name;
 
-    @NotNull(message = "NOTNULL")
-    String imgSrc;
+    String file;
 
     @NotNull(message = "NOTNULL")
     String description;

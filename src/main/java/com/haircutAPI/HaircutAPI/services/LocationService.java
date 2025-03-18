@@ -1,5 +1,10 @@
 package com.haircutAPI.HaircutAPI.services;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.security.GeneralSecurityException;
+import java.util.Base64;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +35,9 @@ public class LocationService {
     @Autowired
     ServicesUtils servicesUtils;
 
+    @Autowired
+    ImagesUploadService imagesUploadService;
+
     @PreAuthorize("hasAuthority('SCOPE_ADMIN')")
     public APIresponse<LocationResponse> createLocation(LocationCreationRequest rq) {
         APIresponse<LocationResponse> rp = new APIresponse<>(SuccessCode.CREATE_SUCCESSFUL.getCode());
@@ -38,6 +46,24 @@ public class LocationService {
         Location location = new Location();
         location = locationMapper.toLocation(location, rq);
         location.setId(servicesUtils.idGenerator("LO", "location"));
+
+        if (rq.getFile() != null && !rq.getFile().equals("")) {
+            byte[] bytes = Base64.getDecoder().decode(rq.getFile());
+            File file;
+            try {
+                file = File.createTempFile("temp", null);
+                FileOutputStream fos = new FileOutputStream(file);
+                fos.write(bytes);
+                fos.flush();
+                fos.close();
+                var temp = imagesUploadService.uploadImageToGoogleDrive(file);
+                location.setImgSrc(temp.getImgSrc());
+            } catch (IOException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        }
+
         locationRepository.save(location);
 
         rp.setResult(locationMapper.toLocationResponse(location));
@@ -45,6 +71,7 @@ public class LocationService {
         return rp;
     }
 
+    @SuppressWarnings("finally")
     @PreAuthorize("hasAuthority('SCOPE_ADMIN')")
     public APIresponse<LocationResponse> updateLocation(LocationUpdationRequest rq, String idLocation) {
         Location location = locationRepository.findById(idLocation)
@@ -52,14 +79,35 @@ public class LocationService {
 
         APIresponse<LocationResponse> rp = new APIresponse<>(SuccessCode.UPDATE_DATA_SUCCESSFUL.getCode());
         rp.setMessage(SuccessCode.UPDATE_DATA_SUCCESSFUL.getMessage());
-
         locationMapper.updateLocation(location, rq);
+        try {
+            if (rq.getFile() != null && !rq.getFile().equals("")) {
+                byte[] bytes = Base64.getDecoder().decode(rq.getFile());
+                File file;
+                file = File.createTempFile("temp", null);
+                FileOutputStream fos = new FileOutputStream(file);
+                fos.write(bytes);
+                fos.flush();
+                fos.close();
+                try {
+                    if (location.getImgSrc() != null && !location.getImgSrc().equals("")) {
+                        imagesUploadService.deleteFile(location.getImgSrc().split("=")[1].replace("&sz", ""));
+                    }
+                } catch (Exception e) {
 
-        locationRepository.save(location);
-
-        rp.setResult(locationMapper.toLocationResponse(location));
-
-        return rp;
+                } finally {
+                    var temp = imagesUploadService.uploadImageToGoogleDrive(file);
+                    location.setImgSrc(temp.getImgSrc());
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            locationRepository.save(location);
+            rp.setMessage(SuccessCode.UPDATE_DATA_SUCCESSFUL.getMessage());
+            rp.setResult(locationMapper.toLocationResponse(location));
+            return rp;
+        }
     }
 
     public APIresponse<LocationResponse> getLocation(String idLocation) {

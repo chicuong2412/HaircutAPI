@@ -28,6 +28,8 @@ public class WorkerCreationRequest {
 
     String specialities;
 
+    String file;
+
     double salary;
 
     double Rate;

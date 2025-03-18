@@ -1,4 +1,4 @@
-package com.haircutAPI.HaircutAPI.dto.response;
+package com.haircutAPI.HaircutAPI.dto.request;
 
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -8,13 +8,6 @@ import lombok.experimental.FieldDefaults;
 @Getter
 @Setter
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class AuthenticationResponse {
-
-    boolean authenticated;
+public class TokenRequest {
     String token;
-
-    String role;
-    String id;
-    String idLocation;
-    
 }

@@ -11,7 +11,6 @@ import com.haircutAPI.HaircutAPI.ENUM.SuccessCode;
 import com.haircutAPI.HaircutAPI.dto.request.WorkerRequest.WorkerCreationRequest;
 import com.haircutAPI.HaircutAPI.dto.request.WorkerRequest.WorkerUpdateRequest;
 import com.haircutAPI.HaircutAPI.dto.response.APIresponse;
-import com.haircutAPI.HaircutAPI.dto.response.CustomerResponse;
 import com.haircutAPI.HaircutAPI.dto.response.WorkerInfoPublicResponse;
 import com.haircutAPI.HaircutAPI.dto.response.WorkerResponse;
 import com.haircutAPI.HaircutAPI.services.WorkerService;
@@ -57,6 +56,14 @@ public class WorkerController {
         return reponse;
     }
 
+    @GetMapping("/getAllPublicWorkers")
+    APIresponse<List<WorkerInfoPublicResponse>> getWorkersPublicAll() {
+        APIresponse<List<WorkerInfoPublicResponse>> reponse = new APIresponse<>(SuccessCode.GET_DATA_SUCCESSFUL.getCode());
+        reponse.setMessage(SuccessCode.GET_DATA_SUCCESSFUL.getMessage());
+        reponse.setResult(workerService.getPublicWorkers());
+        return reponse;
+    }
+
     @GetMapping("/{WorkerID}")
     APIresponse<WorkerResponse> getWorker(@PathVariable String WorkerID) {
         APIresponse<WorkerResponse> reponse = new APIresponse<>(SuccessCode.GET_DATA_SUCCESSFUL.getCode());
@@ -76,6 +83,7 @@ public class WorkerController {
 
     @PutMapping("/{workerID}")
     APIresponse<WorkerResponse> updateWorkerInfo(@PathVariable String workerID, @RequestBody WorkerUpdateRequest rq) {
+
         APIresponse<WorkerResponse> reponse = new APIresponse<>(SuccessCode.UPDATE_DATA_SUCCESSFUL.getCode());
         reponse.setMessage(SuccessCode.UPDATE_DATA_SUCCESSFUL.getMessage());
         reponse.setResult(workerService.updateWorker(workerID, rq));
@@ -93,5 +101,10 @@ public class WorkerController {
     @GetMapping("/getMyInfo")
     public APIresponse<WorkerResponse> getMyInfo() {
         return workerService.getMyInfo(SecurityContextHolder.getContext().getAuthentication());
+    }
+
+    @GetMapping("/getMyAvatar")
+    APIresponse<String> getAvatar() {
+        return workerService.getMyAvatarSource(SecurityContextHolder.getContext().getAuthentication());
     }
 }

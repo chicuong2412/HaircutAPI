@@ -1,5 +1,10 @@
 package com.haircutAPI.HaircutAPI.services;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.security.GeneralSecurityException;
+import java.util.Base64;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +32,8 @@ public class ProductService {
     ProductMapper productMapper;
     @Autowired
     ServicesUtils servicesUtils;
+    @Autowired
+    ImagesUploadService imagesUploadService;
 
     @PreAuthorize("hasAuthority('SCOPE_ADMIN')")
     public APIresponse<ProductResponse> createProduct(ProductCreationRequest rq) {
@@ -34,6 +41,23 @@ public class ProductService {
         product = productMapper.toProduct(product, rq);
 
         product.setId(servicesUtils.idGenerator("PO", "product"));
+
+        if (rq.getFile() != null && !rq.getFile().equals("")) {
+            byte[] bytes = Base64.getDecoder().decode(rq.getFile());
+            File file;
+            try {
+                file = File.createTempFile("temp", null);
+                FileOutputStream fos = new FileOutputStream(file);
+                fos.write(bytes);
+                fos.flush();
+                fos.close();
+                var temp = imagesUploadService.uploadImageToGoogleDrive(file);
+                product.setImgSrc(temp.getImgSrc());
+            } catch (IOException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        }
 
         productRepository.save(product);
 
@@ -46,19 +70,44 @@ public class ProductService {
         return rp;
     }
 
+    @SuppressWarnings("finally")
     @PreAuthorize("hasAuthority('SCOPE_ADMIN')")
     public APIresponse<ProductResponse> updateProduct(ProductUpdatioRequest rq, String idProduct) {
         Product product = productRepository.findById(idProduct)
                 .orElseThrow(() -> new AppException(ErrorCode.ID_NOT_FOUND));
-        productMapper.updateProduct(product, rq);
-        productRepository.save(product);
         APIresponse<ProductResponse> rp = new APIresponse<>(SuccessCode.UPDATE_DATA_SUCCESSFUL.getCode());
 
         rp.setMessage(SuccessCode.UPDATE_DATA_SUCCESSFUL.getMessage());
+        productMapper.updateProduct(product, rq);
 
-        rp.setResult(productMapper.toProductResponse(product));
+        try {
+            if (rq.getFile() != null && !rq.getFile().equals("")) {
+                byte[] bytes = Base64.getDecoder().decode(rq.getFile());
+                File file;
+                file = File.createTempFile("temp", null);
+                FileOutputStream fos = new FileOutputStream(file);
+                fos.write(bytes);
+                fos.flush();
+                fos.close();
+                try {
+                    if (product.getImgSrc() != null && !product.getImgSrc().equals("")) {
+                        imagesUploadService.deleteFile(product.getImgSrc().split("=")[1].replace("&sz", ""));
+                    }
+                } catch (Exception e) {
 
-        return rp;
+                } finally {
+                    var temp = imagesUploadService.uploadImageToGoogleDrive(file);
+                    product.setImgSrc(temp.getImgSrc());
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            productRepository.save(product);
+            rp.setMessage(SuccessCode.UPDATE_DATA_SUCCESSFUL.getMessage());
+            rp.setResult(productMapper.toProductResponse(product));
+            return rp;
+        }
     }
 
     public APIresponse<ProductResponse> getProduct(String idProduct) {

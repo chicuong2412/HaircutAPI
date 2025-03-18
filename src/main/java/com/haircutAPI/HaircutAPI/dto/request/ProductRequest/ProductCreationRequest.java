@@ -14,7 +14,7 @@ public class ProductCreationRequest {
     @NotNull(message = "NOTNULL")
     String name;
 
-    String imgSrc;
+    String file;
 
     long stockQuantity;
 

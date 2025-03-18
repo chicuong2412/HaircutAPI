@@ -17,7 +17,9 @@ public enum ErrorCode {
     ID_WORKER_NOT_FOUND(409, "Id worker doesn't exist"),
     ID_LOCATION_NOT_FOUND(409, "Id location doesn't exist"),
     ACCESS_DENIED(430, "You don't have permissions to access this!!!"),
-    DATA_INTEGRIY(431, "Your data can't be deleted because it exists in other table of information")
+    DATA_INTEGRIY(431, "Your data can't be deleted because it exists in other table of information"),
+    USER_NOT_SIGN_FOR_NOTIFI(501, "This user doesn't sign for notification!!!"),
+    CHANGE_PASSSWORD_FAILED(410, "One of the fields are not match, please fill in the correct information")
     ;
 
     private int code;

@@ -26,7 +26,7 @@ public class Customer {
     String id;
 
     String username;
-    String password;
+    // String password;
     @ColumnDefault(value = "none")
     String nameCustomer = "";
 
@@ -43,6 +43,8 @@ public class Customer {
     LocalDate startDate = LocalDate.now();
     @DateTimeFormat(pattern = "dd-MM-yyyy")
     LocalDate lastDayUsing = LocalDate.now();
+
+    String imgSrc = "../images/avatarDefault.png";
 
     @ColumnDefault(value = "'0'")
     @Enumerated(EnumType.ORDINAL)

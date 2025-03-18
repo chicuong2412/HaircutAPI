@@ -24,7 +24,6 @@ public class Worker {
     String id;
 
     String username;
-    String password;
     String nameWorker = "";
     String specialities = "";
     double salary = 0;
@@ -34,6 +33,7 @@ public class Worker {
     String address = "";
     String phoneNumber = "";
     String idLocation;
+    String imgSrc = "../images/avatarDefault.png";
 
     @Enumerated(EnumType.ORDINAL)
     RoleEmployee idRole = RoleEmployee.EMPLOYEE;

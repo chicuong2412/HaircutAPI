@@ -4,6 +4,8 @@ import com.haircutAPI.HaircutAPI.ENUM.RoleEmployee;
 
 import java.time.LocalDate;
 
+import org.springframework.web.multipart.MultipartFile;
+
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -17,32 +19,22 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class WorkerUpdateRequest {
 
-    @Size(min = 8, message = "PASSWORD_LENGTH_INVALID")
-    @NotNull(message = "NOTNULL")
-    String password;
-
-    @NotNull(message = "NOTNULL")
+    // @Size(min = 8, message = "PASSWORD_LENGTH_INVALID")
+    // @NotNull(message = "NOTNULL")
+    // String password;
     String nameWorker;
-    @NotNull(message = "NOTNULL")
     String specialities;
-    @NotNull(message = "NOTNULL")
     double salary;
-    @NotNull(message = "NOTNULL")
     double Rate;
-    @NotNull(message = "NOTNULL")
     LocalDate DoB;
     @Email(message = "EMAIL_INVALID")
-    @NotNull(message = "NOTNULL")
     String email;
-    @NotNull(message = "NOTNULL")
     String address;
-    @NotNull(message = "NOTNULL")
     String phoneNumber;
-    @NotNull(message = "NOTNULL")
     String location;
-    @NotNull(message = "NOTNULL")
     RoleEmployee idRole;
-    @NotNull(message = "NOTNULL")
     LocalDate startDate;
+
+    String file;
 
 }

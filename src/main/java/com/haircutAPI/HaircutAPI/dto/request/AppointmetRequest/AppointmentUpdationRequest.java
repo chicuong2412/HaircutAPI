@@ -21,23 +21,17 @@ public class AppointmentUpdationRequest {
     @NotNull(message = "NOTNULL")
     String id;
 
-    @NotNull(message = "NOTNULL")
     String idCustomer;
 
-    @NotNull(message = "NOTNULL")
     String idWorker;
 
-    @NotNull(message = "NOTNULL")
     AppointmentStatus status;
 
-    @NotNull(message = "NOTNULL")
     String idLocation;
 
-    @NotNull(message = "NOTNULL")
     @DateTimeFormat(pattern = "dd-MM-yyyyThh:mm")
     LocalDateTime dateTime;
 
-    @NotNull(message = "NOTNULL")
     Set<String> idService;
 
     @NotNull(message = "NOTNULL")

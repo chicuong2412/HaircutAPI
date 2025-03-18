@@ -22,7 +22,7 @@ public class Location {
 
     String name;
 
-    String imgSrc = "";
+    String imgSrc = "../images/BarberDefault.png";
 
     @Column(columnDefinition = "TEXT")
     String address = "";

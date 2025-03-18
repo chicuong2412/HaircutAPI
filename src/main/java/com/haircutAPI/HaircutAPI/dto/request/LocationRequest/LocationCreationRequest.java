@@ -18,8 +18,6 @@ public class LocationCreationRequest {
     @NotNull(message = "NOTNULL")
     String name;
 
-    String imgSrc;
-
     @NotNull(message = "NOTNULL")
     String address;
 
@@ -31,4 +29,6 @@ public class LocationCreationRequest {
 
     @DateTimeFormat(pattern = "hh:mm")
     LocalTime openHour;
+
+    String file;
 }

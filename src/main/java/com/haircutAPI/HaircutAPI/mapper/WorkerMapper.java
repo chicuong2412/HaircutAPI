@@ -19,6 +19,8 @@ public interface WorkerMapper {
 
     Worker toWorker(@MappingTarget Worker worker, WorkerCreationRequest rq);
 
+    WorkerInfoPublicResponse toWorkerInfoPublicResponse(Worker worker);
+
     void updateWorker(@MappingTarget Worker worker, WorkerUpdateRequest rq);   
     
     List<WorkerResponse> toWorkerResponses(List<Worker> workers);

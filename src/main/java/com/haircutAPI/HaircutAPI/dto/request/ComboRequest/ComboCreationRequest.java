@@ -14,7 +14,7 @@ public class ComboCreationRequest {
     @NotNull(message = "NOTNULL")
     String name;
 
-    String imgSrc;
+    String file;
 
     String description;
 

@@ -4,8 +4,6 @@ import com.haircutAPI.HaircutAPI.ENUM.CustomerTypes;
 
 import java.time.LocalDate;
 
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.context.properties.bind.DefaultValue;
 
 import jakarta.validation.constraints.Size;
 import lombok.AccessLevel;
@@ -41,6 +39,8 @@ public class CustomerCreationRequest {
     String address;
 
     String phoneNumber;
+
+    String file;
 
     // LocalDate startDate;
 

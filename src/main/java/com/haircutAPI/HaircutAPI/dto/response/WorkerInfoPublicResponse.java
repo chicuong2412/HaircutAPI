@@ -1,5 +1,7 @@
 package com.haircutAPI.HaircutAPI.dto.response;
 
+import com.haircutAPI.HaircutAPI.enity.Location;
+
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
@@ -13,4 +15,6 @@ public class WorkerInfoPublicResponse {
     String nameWorker;
     String specialities;
     double Rate;
+    Location location;
+    String imgSrc;
 }

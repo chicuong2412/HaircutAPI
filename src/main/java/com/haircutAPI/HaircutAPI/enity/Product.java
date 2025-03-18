@@ -20,7 +20,7 @@ public class Product {
 
     String name;
     long stockQuantity = 0;
-    String imgSrc = "";
+    String imgSrc = "../images/productDefault.png";
 
     @Column(columnDefinition = "TEXT")
     String description = "";

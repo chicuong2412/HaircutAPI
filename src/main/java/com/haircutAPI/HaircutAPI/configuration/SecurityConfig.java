@@ -22,13 +22,13 @@ import org.springframework.web.filter.CorsFilter;
 @EnableMethodSecurity
 public class SecurityConfig {
 
-    private final String[] PublicEndpoints = { "/workers", "/customers", "/auth/workers/login", "/auth/introspect",
-            "/auth/customers/login" };
+    private final String[] PublicEndpoints = { "/workers", "/customers", "/auth/workers/login", "/auth/introspect", "/images/uploadImage",
+            "/auth/customers/login", "auth/login", "auth/changepassword" };
     private final String[] publicGetEndpoints = { "/locations/getLocations", "/locations/getLocation/**",
             "/services/getServiceByID/**",
             "/services/getAllServices", "/services/getAllPublicServices" ,
-            "/products/getProductByID/**", "/products/getProducts", "/combos/getComboByID/**", "/combos/getAllCombos",
-            "/combos/getComboByID/**" };
+            "/products/getProductByID/**", "/products/getProducts", "/combos/getComboByID/**", "/combos/getAllCombos", "combos/getAllPublicCombos",
+            "/combos/getComboByID/**", "locations/getPublicLocations", "/workers/getPublicByIdLocation" };
     @Value("${jwt.SIGNED_KEY}")
     protected String SIGNED_KEY;
 

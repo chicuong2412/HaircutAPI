@@ -34,7 +34,6 @@ public class ServiceEntityController {
 
     @PostMapping("")
     public APIresponse<ServiceResponse> createService(@RequestBody @Valid ServiceCreationRequest rq) {
-        System.out.println(rq.getDescription());
         return serviceEntityService.createService(rq);
     }
 

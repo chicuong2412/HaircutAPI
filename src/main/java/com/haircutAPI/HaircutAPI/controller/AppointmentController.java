@@ -37,7 +37,7 @@ public class AppointmentController {
 
     @GetMapping
     APIresponse<List<AppointmentResponse>> getAllAppointment() {
-        return appointmentService.getAllAppointments();
+        return appointmentService.getAllAppointments(SecurityContextHolder.getContext().getAuthentication());
     }
 
     @GetMapping("/{appointmentID}")
@@ -50,6 +50,13 @@ public class AppointmentController {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
         return appointmentService.updateAppointment(rq, authentication);
+    }
+
+    @PutMapping("/cancel/{id}")
+    public APIresponse<String> updateAppointment(@PathVariable String id) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        return appointmentService.cancelAppointment(id, authentication);
     }
 
     @DeleteMapping("/delete/{appointmentID}")

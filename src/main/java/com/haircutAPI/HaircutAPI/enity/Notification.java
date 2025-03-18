@@ -1,8 +1,8 @@
 package com.haircutAPI.HaircutAPI.enity;
 
-import java.util.Set;
-
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -13,14 +13,14 @@ import lombok.experimental.FieldDefaults;
 @Getter
 @Setter
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class User {
-
-
-    @Id
-    String id;
-
-    String username;
-    String password;
+public class Notification {
     
-    Set<String> roles;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    int id;
+
+    String header;
+    
+    String message;
+
 }

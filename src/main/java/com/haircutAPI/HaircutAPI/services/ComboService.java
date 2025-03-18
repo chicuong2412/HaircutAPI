@@ -1,5 +1,10 @@
 package com.haircutAPI.HaircutAPI.services;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.security.GeneralSecurityException;
+import java.util.Base64;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +31,8 @@ public class ComboService {
     ComboMapper comboEntityMapper;
     @Autowired
     ServicesUtils servicesUtils;
+    @Autowired
+    ImagesUploadService imagesUploadService;
 
     @PreAuthorize("hasAuthority('SCOPE_ADMIN')")
     public APIresponse<ComboResponse> createCombo(ComboCreationRequest rq) {
@@ -35,6 +42,24 @@ public class ComboService {
         ComboEntity comboEntity = new ComboEntity();
         comboEntity = comboEntityMapper.toComboEntity(comboEntity, rq);
         comboEntity.setId(servicesUtils.idGenerator("CO", "combo"));
+
+        if (rq.getFile() != null && !rq.getFile().equals("")) {
+            byte[] bytes = Base64.getDecoder().decode(rq.getFile());
+            File file;
+            try {
+                file = File.createTempFile("temp", null);
+                FileOutputStream fos = new FileOutputStream(file);
+                fos.write(bytes);
+                fos.flush();
+                fos.close();
+                var temp = imagesUploadService.uploadImageToGoogleDrive(file);
+                comboEntity.setImgSrc(temp.getImgSrc());
+            } catch (IOException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        }
+
         comboRepository.save(comboEntity);
 
         rp.setResult(comboEntityMapper.toComboResponse(comboEntity));
@@ -42,6 +67,7 @@ public class ComboService {
         return rp;
     }
 
+    @SuppressWarnings("finally")
     @PreAuthorize("hasAuthority('SCOPE_ADMIN')")
     public APIresponse<ComboResponse> updateCombo(ComboUpdationRequest rq, String idCombo) {
 
@@ -50,14 +76,34 @@ public class ComboService {
         APIresponse<ComboResponse> rp = new APIresponse<>(SuccessCode.UPDATE_DATA_SUCCESSFUL.getCode());
 
         comboEntityMapper.updateComboEntity(comboEntity, rq);
+        try {
+            if (rq.getFile() != null && !rq.getFile().equals("")) {
+                byte[] bytes = Base64.getDecoder().decode(rq.getFile());
+                File file;
+                file = File.createTempFile("temp", null);
+                FileOutputStream fos = new FileOutputStream(file);
+                fos.write(bytes);
+                fos.flush();
+                fos.close();
+                try {
+                    if (comboEntity.getImgSrc() != null && !comboEntity.getImgSrc().equals("")) {
+                        imagesUploadService.deleteFile(comboEntity.getImgSrc().split("=")[1].replace("&sz", ""));
+                    }
+                } catch (Exception e) {
+                } finally {
+                    var temp = imagesUploadService.uploadImageToGoogleDrive(file);
+                    comboEntity.setImgSrc(temp.getImgSrc());
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            comboRepository.save(comboEntity);
+            rp.setMessage(SuccessCode.UPDATE_DATA_SUCCESSFUL.getMessage());
+            rp.setResult(comboEntityMapper.toComboResponse(comboEntity));
+            return rp;
+        }
 
-        comboRepository.save(comboEntity);
-
-        rp.setMessage(SuccessCode.UPDATE_DATA_SUCCESSFUL.getMessage());
-
-        rp.setResult(comboEntityMapper.toComboResponse(comboEntity));
-
-        return rp;
     }
 
     public APIresponse<ComboResponse> getComboEntity(String idCombo) {

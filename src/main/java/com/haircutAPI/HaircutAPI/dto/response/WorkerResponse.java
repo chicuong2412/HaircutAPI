@@ -19,6 +19,7 @@ public class WorkerResponse {
     String username;
     String nameWorker;
     String specialities;
+    String imgSrc;
     double salary;
     double Rate;
     LocalDate DoB;

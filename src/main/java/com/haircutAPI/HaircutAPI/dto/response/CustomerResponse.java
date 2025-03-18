@@ -26,5 +26,6 @@ public class CustomerResponse {
     String lastDayUsing;
     CustomerTypes typeCustomer;
     boolean deleted;
+    String imgSrc;
 
 }

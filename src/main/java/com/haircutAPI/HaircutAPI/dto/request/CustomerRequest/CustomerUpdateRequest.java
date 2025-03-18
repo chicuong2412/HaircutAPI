@@ -5,7 +5,6 @@ import com.haircutAPI.HaircutAPI.ENUM.CustomerTypes;
 import java.time.LocalDate;
 
 import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.Size;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
@@ -21,6 +20,7 @@ public class CustomerUpdateRequest {
     String nameCustomer;
     double loyaltyPoint;
     LocalDate DoB;
+    String file;
     @Email(message = "EMAIL_INVALID")
     String email;
     String address;

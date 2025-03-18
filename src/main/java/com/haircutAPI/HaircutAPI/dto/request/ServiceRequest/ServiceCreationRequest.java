@@ -10,21 +10,17 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.FieldDefaults;
 
-
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class ServiceCreationRequest {
-    
 
     @NotNull(message = "NOTNULL")
     String name;
 
-
-    String imgSrc;
-
+    String file;
 
     String description;
 
