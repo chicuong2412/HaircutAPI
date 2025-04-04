@@ -73,7 +73,6 @@ public class NotificationService {
     }
 
     public void addNotificationToUser(String header, String message, String userId) {
-        System.out.println("User ID: " + userId);
         com.haircutAPI.HaircutAPI.enity.Notification notification = new com.haircutAPI.HaircutAPI.enity.Notification();
         NotificationUser notificationUser = notificationUserRepository.findByUserId(userId);
         if (notificationUser == null) {
