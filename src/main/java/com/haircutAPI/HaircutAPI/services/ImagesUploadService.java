@@ -65,7 +65,6 @@ public class ImagesUploadService {
 
     public void deleteFile(String id) throws GeneralSecurityException, IOException {
         Drive drive = createDriveService();
-        // drive.files().list().forEach((t, u) -> System.out.println(t.toString() + " " + u.toString()));
         try {
             drive.files().delete(id).execute();
         } catch (Exception e) {

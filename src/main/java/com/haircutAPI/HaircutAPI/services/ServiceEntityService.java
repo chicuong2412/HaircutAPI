@@ -124,7 +124,6 @@ public class ServiceEntityService {
     public APIresponse<ServiceResponse> getServiceEntity(String idService) {
         ServiceEntity serviceEntity = serviceRepository.findById(idService)
                 .orElseThrow(() -> new AppException(ErrorCode.ID_NOT_FOUND));
-        System.out.println(serviceEntity.getDescription());
         APIresponse<ServiceResponse> rp = new APIresponse<>(SuccessCode.GET_DATA_SUCCESSFUL.getCode());
         rp.setMessage(SuccessCode.GET_DATA_SUCCESSFUL.getMessage());
 
