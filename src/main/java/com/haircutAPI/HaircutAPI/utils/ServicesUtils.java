@@ -163,12 +163,12 @@ public class ServicesUtils {
         return customer.getId();
     }
 
-    public HashSet<ServiceEntity> toServiceEntitiesSet(Set<String> listServices) {
-        return new HashSet<>(serviceRepository.findAllById(listServices));
+    public List<ServiceEntity> toServiceEntitiesSet(Set<String> listServices) {
+        return new ArrayList<>(serviceRepository.findAllById(listServices));
     }
 
-    public HashSet<ComboEntity> toComboEnitiesSet(Set<String> listCombos) {
-        return new HashSet<>(comboRepository.findAllById(listCombos));
+    public List<ComboEntity> toComboEnitiesSet(Set<String> listCombos) {
+        return new ArrayList<>(comboRepository.findAllById(listCombos));
     }
 
     public Customer getCustomerByID(String id) {
@@ -194,8 +194,8 @@ public class ServicesUtils {
         return workerRepository.findByUsername(username);
     }
 
-    public Worker findWorkerById(String username) {
-        return workerRepository.findById(username).orElseThrow(() -> new AppException(ErrorCode.ID_WORKER_NOT_FOUND));
+    public Worker findWorkerById(String idWorker) {
+        return workerRepository.findById(idWorker).orElseThrow(() -> new AppException(ErrorCode.ID_WORKER_NOT_FOUND));
     }
 
     public String idGenerator(String prefix, String typeEntity) {

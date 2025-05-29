@@ -11,6 +11,8 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
@@ -30,6 +32,14 @@ public class Appointment {
 
     String idCustomer;
     String idWorker;
+
+    @ManyToOne
+    @JoinColumn(name = "idCustomer", referencedColumnName = "id", insertable = false, updatable = false)
+    Customer customer;
+
+    @ManyToOne
+    @JoinColumn(name = "idWorker", referencedColumnName = "id", insertable = false, updatable = false)
+    Worker worker;
 
     @Enumerated(EnumType.ORDINAL)
     AppointmentStatus status;
