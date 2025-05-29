@@ -1,7 +1,10 @@
 package com.haircutAPI.HaircutAPI.dto.response;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Set;
+
+import org.checkerframework.checker.units.qual.s;
 
 import com.haircutAPI.HaircutAPI.ENUM.AppointmentStatus;
 import com.haircutAPI.HaircutAPI.enity.ComboEntity;
@@ -16,7 +19,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.FieldDefaults;
-
 
 @Getter
 @Setter
@@ -35,9 +37,23 @@ public class AppointmentResponse {
 
     LocalDateTime dateTime;
 
-    Set<ServiceEntity> idService;
-    Set<ComboEntity> idCombo;
+    List<ServiceEntity> idService;
+    List<ComboEntity> idCombo;
 
     double price;
     boolean deleted;
+
+    public AppointmentResponse(String id, Customer customer, Worker worker, String idLocation,
+            AppointmentStatus status, LocalDateTime dateTime, double price,
+            boolean deleted) {
+        this.id = id;
+        this.customer = customer;
+        this.worker = worker;
+        this.idLocation = idLocation;
+        this.status = status;
+        this.price = price;
+        this.deleted = deleted;
+        this.dateTime = dateTime;
+    }
+
 }

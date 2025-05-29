@@ -15,6 +15,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.haircutAPI.HaircutAPI.ENUM.AppointmentStatus;
 import com.haircutAPI.HaircutAPI.ENUM.ErrorCode;
 import com.haircutAPI.HaircutAPI.ENUM.SuccessCode;
@@ -24,6 +26,8 @@ import com.haircutAPI.HaircutAPI.dto.response.APIresponse;
 import com.haircutAPI.HaircutAPI.dto.response.AppointmentResponse;
 import com.haircutAPI.HaircutAPI.enity.Appointment;
 import com.haircutAPI.HaircutAPI.enity.AppointmentDetails;
+import com.haircutAPI.HaircutAPI.enity.ComboEntity;
+import com.haircutAPI.HaircutAPI.enity.ServiceEntity;
 import com.haircutAPI.HaircutAPI.enity.Worker;
 import com.haircutAPI.HaircutAPI.exception.DefinedException.AppException;
 import com.haircutAPI.HaircutAPI.mapper.AppointmentMapper;
@@ -59,6 +63,9 @@ public class AppointmentService {
 
         appointment = appointmentMapper.toAppointment(rq);
 
+        appointment.setCustomer(servicesUtils.getCustomerByID(rq.getIdCustomer()));
+        appointment.setWorker(servicesUtils.findWorkerById(rq.getIdWorker()));
+
         appointmentRepository.save(appointment);
 
         APIresponse<AppointmentResponse> rp = new APIresponse<>(SuccessCode.CREATE_SUCCESSFUL.getCode());
@@ -74,11 +81,11 @@ public class AppointmentService {
         appointmentDetailsRepository.save(appointmentDetails);
 
         rp.setResult(appointmentMapper.appointmentResponseGenerator(appointment, appointmentDetails,
-                servicesUtils.getCustomerByID(appointment.getIdCustomer()),
-                servicesUtils.findWorkerById(appointment.getIdWorker())));
+                appointment.getCustomer(),
+                appointment.getWorker()));
         List<String> userIds = new ArrayList<>();
-        userIds.add(appointment.getIdCustomer());
-        userIds.add(appointment.getIdWorker());
+        userIds.add(appointment.getCustomer().getId());
+        userIds.add(appointment.getWorker().getId());
         servicesUtils.sendNotificationsToUsers(userIds, "New Appointmet",
                 "There is a new appointment for you at: " + appointment.getDateTime().toString());
         return rp;
@@ -92,7 +99,7 @@ public class AppointmentService {
             Worker workerManager = servicesUtils.findWorkerByUsername(authentication.getName());
             return getAppointmentByIdLocation(workerManager.getIdLocation(), authentication);
         }
-        var list = appointmentRepository.findAll();
+        List<AppointmentResponse> list = appointmentRepository.GetAllReponses();
 
         List<AppointmentResponse> result = findAppointmentDetailsByListAppointment(list);
         result.sort((o1, o2) -> o1.getDateTime().compareTo(o2.getDateTime()));
@@ -103,21 +110,21 @@ public class AppointmentService {
         return rp;
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked"})
     public APIresponse<AppointmentResponse> getAppointment(String id, Authentication authentication) {
         APIresponse<AppointmentResponse> rp = new APIresponse<>(SuccessCode.GET_DATA_SUCCESSFUL.getCode());
         Appointment appointment = appointmentRepository.findById(id)
                 .orElseThrow(() -> new AppException(ErrorCode.DATA_INPUT_INVALID));
         AppointmentDetails appointmentDetail = appointmentDetailsRepository.findById(id)
                 .orElseThrow(() -> new AppException(ErrorCode.DATA_INPUT_INVALID));
-        var authorities = (Collection<GrantedAuthority>) authentication.getAuthorities();
+        Collection<GrantedAuthority> authorities = (Collection<GrantedAuthority>) authentication.getAuthorities();
         if (!servicesUtils.checkAuthoritesHasRole(authorities,
                 "SCOPE_ADMIN")) {
 
             if (!servicesUtils.checkAuthoritesHasRole(authorities,
                     "SCOPE_MANAGER")) {
                 if (!servicesUtils.findCustomerIDByUsername(authentication.getName())
-                        .equals(appointment.getIdCustomer())) {
+                        .equals(appointment.getCustomer().getId())) {
                     throw new AccessDeniedException("Access Denied");
                 }
             } else {
@@ -128,9 +135,8 @@ public class AppointmentService {
 
         }
 
-        var appointmentRp = appointmentMapper.appointmentResponseGenerator(appointment, appointmentDetail,
-                servicesUtils.getCustomerByID(appointment.getIdCustomer()),
-                servicesUtils.findWorkerById(appointment.getIdWorker()));
+        AppointmentResponse  appointmentRp = appointmentRepository.getAppointmentResponseById(id);
+        appointmentRp = findAppointmentDetailsByAppointment(appointmentRp);
 
         rp.setMessage(SuccessCode.GET_DATA_SUCCESSFUL.getMessage());
         rp.setResult(appointmentRp);
@@ -138,11 +144,11 @@ public class AppointmentService {
         return rp;
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked" })
     public APIresponse<AppointmentResponse> updateAppointment(AppointmentUpdationRequest rq,
             Authentication authentication) {
 
-        var authorities = (Collection<GrantedAuthority>) authentication.getAuthorities();
+        Collection<GrantedAuthority> authorities = (Collection<GrantedAuthority>) authentication.getAuthorities();
 
         if (!servicesUtils.checkAuthoritesHasRole(authorities,
                 "SCOPE_ADMIN")) {
@@ -181,8 +187,8 @@ public class AppointmentService {
         APIresponse<AppointmentResponse> apIresponse = new APIresponse<>(SuccessCode.UPDATE_DATA_SUCCESSFUL.getCode());
         apIresponse.setMessage(SuccessCode.UPDATE_DATA_SUCCESSFUL.getMessage());
         apIresponse.setResult(appointmentMapper.appointmentResponseGenerator(appointment, appointmentDetails,
-                servicesUtils.getCustomerByID(appointment.getIdCustomer()),
-                servicesUtils.findWorkerById(appointment.getIdWorker())));
+                appointment.getCustomer(),
+                appointment.getWorker()));
 
         return apIresponse;
     }
@@ -194,8 +200,8 @@ public class AppointmentService {
                 .orElseThrow(() -> new AppException(ErrorCode.ID_NOT_FOUND));
         appointment.setStatus(AppointmentStatus.CANCELLED);
         List<String> userIds = new ArrayList<>();
-        userIds.add(appointment.getIdWorker());
-        userIds.add(appointment.getIdCustomer());
+        userIds.add(appointment.getWorker().getId());
+        userIds.add(appointment.getCustomer().getId());
         servicesUtils.sendNotificationsToUsers(userIds, "Appointmemt cancelled",
                 "Your appointmet at " +
                         appointment.getDateTime().toString().replace("T", " ") + " has been cancelled");
@@ -207,7 +213,7 @@ public class AppointmentService {
     public APIresponse<String> deleteAppointment(String id) {
         if (!appointmentRepository.existsById(id))
             throw new AppException(ErrorCode.DATA_INPUT_INVALID);
-        var appointment = appointmentRepository.findById(id).orElse(null);
+        Appointment appointment = appointmentRepository.findById(id).orElse(null);
         appointment.setDeleted(true);
         appointmentRepository.save(appointment);
         APIresponse<String> apIresponse = new APIresponse<>(SuccessCode.DELETE_SUCCESSFUL.getCode());
@@ -215,12 +221,12 @@ public class AppointmentService {
         return apIresponse;
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked"})
     @PreAuthorize("hasAuthority('SCOPE_ADMIN') or hasAuthority('SCOPE_MANAGER')")
     public APIresponse<List<AppointmentResponse>> getAppointmentByIdLocation(String idLocation,
             Authentication authentication) {
 
-        var authorities = (Collection<GrantedAuthority>) authentication.getAuthorities();
+        Collection<GrantedAuthority> authorities = (Collection<GrantedAuthority>) authentication.getAuthorities();
 
         if (!servicesUtils.checkAuthoritesHasRole(authorities,
                 "SCOPE_ADMIN")) {
@@ -232,7 +238,7 @@ public class AppointmentService {
 
         }
 
-        var listAppointments = appointmentRepository.findAllByIdLocation(idLocation);
+        List<AppointmentResponse> listAppointments = appointmentRepository.GetReponsesByIdLocation(idLocation);
 
         List<AppointmentResponse> result = findAppointmentDetailsByListAppointment(listAppointments);
         APIresponse<List<AppointmentResponse>> rp = new APIresponse<>(SuccessCode.GET_DATA_SUCCESSFUL.getCode());
@@ -245,9 +251,11 @@ public class AppointmentService {
     @PreAuthorize("hasAuthority('SCOPE_ADMIN') or #username == #currentUsername")
     public APIresponse<List<AppointmentResponse>> getAppointmentByCustomerUsername(String username,
             String currentUsername) {
-        var list = appointmentRepository.findByIdCustomer(servicesUtils.findCustomerIDByUsername(username));
-
-        List<AppointmentResponse> result = findAppointmentDetailsByListAppointment(list);
+        // var list = appointmentRepository.getByIdCustomer(servicesUtils.findCustomerIDByUsername(username));
+        List<AppointmentResponse> listAppointments = appointmentRepository.GetReponsesByIdCustomer(servicesUtils.findCustomerIDByUsername(username));
+        System.out.println("List Appointments: " + listAppointments.size());
+        
+        List<AppointmentResponse> result = findAppointmentDetailsByListAppointment(listAppointments);
         APIresponse<List<AppointmentResponse>> rp = new APIresponse<>(SuccessCode.GET_DATA_SUCCESSFUL.getCode());
         rp.setResult(result);
         rp.setMessage(SuccessCode.GET_DATA_SUCCESSFUL.getMessage());
@@ -259,7 +267,7 @@ public class AppointmentService {
     public APIresponse<List<AppointmentResponse>> getAppointmentByIdWorker(Authentication authentication,
             String idWorker) {
 
-        var authorities = (Collection<GrantedAuthority>) authentication.getAuthorities();
+        Collection<GrantedAuthority> authorities = (Collection<GrantedAuthority>) authentication.getAuthorities();
 
         if (!servicesUtils.checkAuthoritesHasRole(authorities,
                 "SCOPE_ADMIN")) {
@@ -273,7 +281,7 @@ public class AppointmentService {
 
         }
 
-        var listAppointments = appointmentRepository.findAllByIdWorker(idWorker);
+        List<AppointmentResponse> listAppointments = appointmentRepository.GetReponsesByIdWorker(idWorker);
 
         List<AppointmentResponse> result = findAppointmentDetailsByListAppointment(listAppointments);
         APIresponse<List<AppointmentResponse>> rp = new APIresponse<>(SuccessCode.GET_DATA_SUCCESSFUL.getCode());
@@ -283,17 +291,24 @@ public class AppointmentService {
         return rp;
     }
 
-    private List<AppointmentResponse> findAppointmentDetailsByListAppointment(List<Appointment> listAppointments) {
-        var listAppointmentResponses = new ArrayList<AppointmentResponse>();
-        for (Appointment appointment : listAppointments) {
-            AppointmentDetails appointmentDetail = appointmentDetailsRepository.findById(appointment.getId())
-                    .orElseThrow();
-            listAppointmentResponses
-                    .add(appointmentMapper.appointmentResponseGenerator(appointment, appointmentDetail,
-                            servicesUtils.getCustomerByID(appointment.getIdCustomer()),
-                            servicesUtils.findWorkerById(appointment.getIdWorker())));
+    private List<AppointmentResponse> findAppointmentDetailsByListAppointment(List<AppointmentResponse> listAppointments) {
+        List<AppointmentResponse> listAppointmentResponses = new ArrayList<AppointmentResponse>();
+        for (AppointmentResponse response : listAppointments) {
+            List<ServiceEntity> listServices = appointmentRepository.findServicesByAppointmentId(response.getId());
+            List<ComboEntity> listCombos = appointmentRepository.findCombosByAppointmentId(response.getId());
+            response.setIdService(listServices);
+            response.setIdCombo(listCombos);
+            listAppointmentResponses.add(response);
         }
         return listAppointmentResponses;
+    }
+
+    private AppointmentResponse findAppointmentDetailsByAppointment(AppointmentResponse appointment) {
+        List<ServiceEntity> listServices = appointmentRepository.findServicesByAppointmentId(appointment.getId());
+        List<ComboEntity> listCombos = appointmentRepository.findCombosByAppointmentId(appointment.getId());
+        appointment.setIdService(listServices);
+        appointment.setIdCombo(listCombos);
+        return appointment;
     }
 
     private boolean checkValidInfomationRq(AppointmentCreationRequest rq) {
@@ -349,8 +364,8 @@ public class AppointmentService {
                 appointment.setStatus(AppointmentStatus.OVERDUE);
                 appointmentRepository.save(appointment);
                 List<String> userIds = new ArrayList<>();
-                userIds.add(appointment.getIdCustomer());
-                userIds.add(appointment.getIdWorker());
+                userIds.add(appointment.getCustomer().getId());
+                userIds.add(appointment.getWorker().getId());
                 servicesUtils.sendNotificationsToUsers(userIds, "Overdue Appointmet",
                         "The appointment at " + appointment.getDateTime().toString().replace("T", " ") + " is overdue");
             }
